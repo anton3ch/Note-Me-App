@@ -7,7 +7,7 @@
 * 11:50 create figma diagram
 * 13:20 write capstone proposal 
 * 13:50 research headers
-
+* 14:50 research icons
 
 
 ![Note Me mockup](/noteme-mockup.png)
