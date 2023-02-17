@@ -3,3 +3,4 @@
 * 8:20: watch intro to React Native
 * 9:20: watch styling with React Native
 * 10:10: watch navigation with React Native
+* 11:20: create basic project structure with expo
