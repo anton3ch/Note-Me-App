@@ -5,5 +5,9 @@
 * 10:10: watch navigation with React Native
 * 11:20: create basic project structure with expo
 * 11:50 create figma diagram
+* 13:20 write capstone proposal 
+* 13:50 research headers
+
+
 
 ![Note Me mockup](/noteme-mockup.png)
