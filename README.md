@@ -8,6 +8,7 @@
 * 13:20 write capstone proposal 
 * 13:50 research headers
 * 14:50 research icons
-
+...
+* 17:00 research react native screens
 
 ![Note Me mockup](/noteme-mockup.png)
