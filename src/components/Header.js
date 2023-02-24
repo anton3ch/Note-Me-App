@@ -1,21 +1,27 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, View, Image, Text } from 'react-native'
 import React from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenType } from '../constants/constants';
 
 
+
+
+
+
+
 const Header = (props) => {
   return (
     <View style={styles.header} >
-      <Ionicons name='list' style={styles.icons}
+      {/* <Ionicons name='list' style={styles.icons}
       onPress={() => props.onScreenChange(ScreenType.noteList)}
-      />
-      <Text style={styles.text}
-      onPress={() => props.onScreenChange(ScreenType.home)}
-      >Note Me</Text>
-      <Ionicons name='add'  style={styles.icons}
+      /> */}
+      
+      <Text style={styles.text}>Note Me</Text>
+
+      {/* <Ionicons name='add'  style={styles.icons}
       onPress={() => props.onScreenChange(ScreenType.addNote)}
-      />
+      /> */}
+
     </View>
   )
 }
