@@ -7,17 +7,18 @@ import { v4 } from 'uuid';
 import {Dimensions} from 'react-native';
 import { VibrancyView } from "@react-native-community/blur/";
 import { BlurView } from 'expo-blur';
-
+import { useNavigation } from "@react-navigation/native"
 
 const AddNote = (props) => {
   const [note, setNote] = useState();
+  const navigation = useNavigation();
 
   const saveNote = async () => {
     const value = await AsyncStorage.getItem("NOTES")
     const n = value ? JSON.parse(value) : []
-    n.push({id: v4(), note: note, key: v4()})
+    n.push({id: v4(), note: note, key: v4(), time: Date.now()})
     await AsyncStorage.setItem("NOTES", JSON.stringify(n))
-    //.then(() => props.onScreenChange(ScreenType.noteList))
+    .then(() => navigation.navigate(ScreenType.noteList));
     setNote("")
   }
   
