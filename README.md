@@ -14,6 +14,8 @@
 #### Friday, 02/24
 * 8:10: research screen creation to add note
 * 9:40: research how to store notes in async storage and display with list
-
+* 11:20 research how to edit notes
+* 12:00 pause research
+* 1:05 resume research
 
 ![Note Me mockup](/noteme-mockup.png)
