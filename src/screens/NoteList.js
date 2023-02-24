@@ -1,4 +1,4 @@
-import { StyleSheet, View, Animated, TouchableHighlight, TouchableOpacity, StatusBar } from 'react-native'
+import { StyleSheet, View, Animated, TouchableHighlight, TouchableOpacity, StatusBar, Modal, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -15,10 +15,15 @@ import { BlurView } from 'expo-blur';
 
 const NoteList = () => {
   const [notes, setNotes] = useState([]);
+  const [isRender, setIsRender] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [modalInputText, setModalInputText] = useState();
+  const [editNoteId, setEditNoteId] = useState();
   // const navigation = useNavigation();
 
   const saveNotes = async (data) => {
-    await AsyncStorage.setItem("NOTES", JSON.stringify(data))
+    await AsyncStorage.setItem("NOTES", JSON.stringify(data));
+    setNotes(data);
   }
 
   useFocusEffect(
@@ -50,10 +55,10 @@ const NoteList = () => {
     }
   }
 
-  const deleteRow = (rowMap, itemId) => {
-    closeRow(rowMap, itemId);
-    const filteredNotes = notes.filter(item => item.id !== itemId);
-    setNotes(filteredNotes);
+  const deleteRow = (itemId) => {
+    console.log("oh I;m so activated")
+    // closeRow(rowMap, itemId);
+    const filteredNotes = notes.filter(item => item.key !== itemId);
     saveNotes(filteredNotes);
   }
 
@@ -67,17 +72,41 @@ const NoteList = () => {
     console.log('onRightActionStatusChange', rowKey);
   };
 
-  const onRightAction = rowKey => {
-    console.log('onRightAction', rowKey);
-  };
+  // const onRightAction = rowKey => {
+  //   console.log('onRightAction', rowKey);
+  // };
 
   const onLeftAction = rowKey => {
     console.log('onLeftAction', rowKey);
   };
 
+  const handleEditItem = async (editNoteId) => {
+    const result = await AsyncStorage.getItem('NOTES');
+    console.log(result);
+    let notes = [];
+    if (result !== null) notes = JSON.parse(result);
 
+    const updatedNotes = notes.filter(item => {
+      if(item.id === editNoteId) {
+        item.note = modalInputText;
+        return item;
+      }
+      return item;
+    })
+    saveNotes(updatedNotes);
+    setIsRender(!isRender);
+  }
 
+  const onPressSaveEdit = () => {
+    handleEditItem(editNoteId);
+    setIsModalVisible(false);
+  }
 
+  const onPressItem = (item) => {
+    setIsModalVisible(true);
+    setModalInputText(item.note);
+    setEditNoteId(item.id);
+  }
 
 
 
@@ -102,7 +131,8 @@ const NoteList = () => {
     return (
       <Animated.View
         style={[styles.rowFront, {height: rowHeightAnimatedValue}]}>
-        <TouchableHighlight style={styles.rowFrontVisible}underlayColor={'#aaa'}>
+        <TouchableHighlight style={styles.rowFrontVisible} underlayColor={'#aaa'}
+        onPress={() => onPressItem(data.item)}>
           <View>
             <Text style={styles.details}>{data.item.note}</Text>
           </View>
@@ -137,15 +167,16 @@ const NoteList = () => {
     //     useNativeDriver: false,
     //   });
     // }
+    console.log(rightActionActivated);
     if (rightActionActivated) {
       Animated.spring(rowActionAnimatedValue, {
         toValue: 500,
-        // useNativeDriver: false
+        useNativeDriver: false
       }).start();
     } else {
       Animated.spring(rowActionAnimatedValue, {
         toValue: 75,
-        // useNativeDriver: false
+        useNativeDriver: false
       }).start();
     }
 
@@ -173,7 +204,7 @@ const NoteList = () => {
 
     return (
       <Animated.View style={[styles.rowBack, {height: rowHeightAnimatedValue}]}>
-        <Text>Left</Text>
+        {/* <Text>Left</Text> */}
         {shareComponent}
 
         <Animated.View style={[styles.backRightBtn, styles.backRightBtnRight, {
@@ -221,23 +252,46 @@ const NoteList = () => {
       style={styles.gradient}>
     <BlurView intensity={40} tint="light" style={styles.blurContainer}>
       <SwipeListView
-        data={notes.reverse()}
+        data={notes}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
         leftOpenValue={75}
         rightOpenValue={-150}
         disableRightSwipe
         leftActivationValue={100}
-        rightActivationValue={-200}
+        rightActivationValue={-152}
         leftActionValue={0}
         rightActionValue={-400}
+        extraData={isRender}
+        onRightAction={(item) => deleteRow(item)}
         onLeftAction={onLeftAction}
-        onRightAction={onRightAction}
         onLeftActionStatusChange={onLeftActionStatusChange}
         onRightActionStatusChange={onRightActionStatusChange}
-        
+
         />
         </BlurView>
+        <Modal
+        animationType='slide'
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}>
+          <View style={styles.modalView}>
+            <TextInput
+            style={styles.modalTextInput}
+            onChangeText={(text) => setModalInputText(text)}
+            defaultValue={modalInputText}
+            editable={true}/>
+              
+            <TouchableOpacity
+              onPress={() => onPressSaveEdit()}
+              style={styles.touchableSave}
+            >
+              <Text style={styles.saveText}>Save</Text>
+
+            </TouchableOpacity>
+
+          </View>
+
+        </Modal>
     </LinearGradient>
   )
 }
@@ -324,6 +378,27 @@ const styles = StyleSheet.create({
   details: {
     fontSize: 12,
     color: '#999',
+  },
+  modalView: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  modalTextInput: {
+    width: '90%',
+    height: 70,
+    borderColor: 'grey',
+    borderWidth: 1,
+    fontSize: 25,
+  },
+  touchableSave: {
+    backgroundColor: 'white',
+    paddingHorizontal: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  saveText: {
+
   },
 
 })
