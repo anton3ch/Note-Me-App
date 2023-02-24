@@ -13,6 +13,7 @@
 
 #### Friday, 02/24
 * 8:10: research screen creation to add note
+* 9:40: research how to store notes in async storage and display with list
 
 
 ![Note Me mockup](/noteme-mockup.png)
