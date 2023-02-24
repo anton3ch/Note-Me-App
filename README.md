@@ -11,4 +11,8 @@
 ...
 * 17:00 research react native screens
 
+#### Friday, 02/24
+* 8:10: research screen creation to add note
+
+
 ![Note Me mockup](/noteme-mockup.png)
