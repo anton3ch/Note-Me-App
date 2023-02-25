@@ -12,14 +12,15 @@ import { Share } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 
-
 const NoteList = () => {
   const [notes, setNotes] = useState([]);
   const [isRender, setIsRender] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalInputText, setModalInputText] = useState();
   const [editNoteId, setEditNoteId] = useState();
-  // const navigation = useNavigation();
+  const navigation = useNavigation();
+
+
 
   const saveNotes = async (data) => {
     await AsyncStorage.setItem("NOTES", JSON.stringify(data));
@@ -38,6 +39,18 @@ const NoteList = () => {
     ))
       // console.log(notes)
   }
+
+  const reverseData = data => {
+    return data.sort((a, b) => {
+      const aInt = parseInt(a.time);
+      const bInt = parseInt(b.time);
+      if (aInt < bInt) return 1;
+      if (aInt == bInt) return 0;
+      if (aInt > bInt) return -1;
+    });
+  };
+
+  const reverseNotes = reverseData(notes);
 
   const onShare = async (data) => {
     try {
@@ -111,28 +124,32 @@ const NoteList = () => {
 
 
 
-
+  const openNote = note => {
+    navigation.navigate('NoteDetail', { note });
+  };
 
   const VisibleItem = props => {
     
     const {data,
       rowHeightAnimatedValue, onDelete, rightActionState} = props;
-      console.log("rightActionState", rightActionState);
-    if (rightActionState) {
-      onDelete();
-      console.log("rightActionState");
-      Animated.timing(rowHeightAnimatedValue, {
-        toValue: 0,
-        duration: 0,
-        // useNativeDriver: false,
-      });
-    }
+    const item = data.item.id;
+    console.log(item, '__________ itemid' )
+    // if (rightActionState) {
+    //   onDelete();
+    //   console.log("rightActionState");
+    //   Animated.timing(rowHeightAnimatedValue, {
+    //     toValue: 0,
+    //     duration: 0,
+    //     // useNativeDriver: false,
+    //   });
+    // }
 
     return (
       <Animated.View
         style={[styles.rowFront, {height: rowHeightAnimatedValue}]}>
         <TouchableHighlight style={styles.rowFrontVisible} underlayColor={'#aaa'}
-        onPress={() => onPressItem(data.item)}>
+        // onPress={() => onPressItem(data.item)}>
+        onPress={() => openNote(item)} >
           <View>
             <Text style={styles.details}>{data.item.note}</Text>
           </View>
@@ -148,7 +165,7 @@ const NoteList = () => {
     return (
       <View>
         <VisibleItem data={data} rowMap={rowMap} rowHeightAnimatedValue={rowHeightAnimatedValue}
-        removeRow={() => deleteRow(rowMap, data.item.id)}
+        removeRow={() => deleteRow(data.item.id)}
         />
       </View>
     )
@@ -167,7 +184,7 @@ const NoteList = () => {
     //     useNativeDriver: false,
     //   });
     // }
-    console.log(rightActionActivated);
+
     if (rightActionActivated) {
       Animated.spring(rowActionAnimatedValue, {
         toValue: 500,
@@ -240,7 +257,7 @@ const NoteList = () => {
       rowMap={rowMap}
       rowActionAnimatedValue={rowActionAnimatedValue}
       rowHeightAnimatedValue={rowHeightAnimatedValue}
-      onDelete={() => deleteRow(rowMap, data.item.id) }
+      onDelete={() => deleteRow(data.item.id) }
       />
     )
   }
@@ -252,14 +269,14 @@ const NoteList = () => {
       style={styles.gradient}>
     <BlurView intensity={40} tint="light" style={styles.blurContainer}>
       <SwipeListView
-        data={notes}
+        data={reverseNotes}
         renderItem={renderItem}
         renderHiddenItem={renderHiddenItem}
         leftOpenValue={75}
         rightOpenValue={-150}
         disableRightSwipe
         leftActivationValue={100}
-        rightActivationValue={-152}
+        rightActivationValue={-250}
         leftActionValue={0}
         rightActionValue={-400}
         extraData={isRender}
