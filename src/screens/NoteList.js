@@ -15,14 +15,13 @@ import { BlurView } from 'expo-blur';
 const NoteList = () => {
   const [notes, setNotes] = useState([]);
   const [isRender, setIsRender] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [modalInputText, setModalInputText] = useState();
-  const [editNoteId, setEditNoteId] = useState();
   const navigation = useNavigation();
 
 
 
   const saveNotes = async (data) => {
+    console.log(data, 'dataForSave');
     await AsyncStorage.setItem("NOTES", JSON.stringify(data));
     setNotes(data);
   }
@@ -69,7 +68,7 @@ const NoteList = () => {
   }
 
   const deleteRow = (itemId) => {
-    console.log("oh I;m so activated")
+    // console.log("oh I;m so activated")
     // closeRow(rowMap, itemId);
     const filteredNotes = notes.filter(item => item.key !== itemId);
     saveNotes(filteredNotes);
@@ -93,47 +92,16 @@ const NoteList = () => {
     console.log('onLeftAction', rowKey);
   };
 
-  const handleEditItem = async (editNoteId) => {
-    const result = await AsyncStorage.getItem('NOTES');
-    console.log(result);
-    let notes = [];
-    if (result !== null) notes = JSON.parse(result);
-
-    const updatedNotes = notes.filter(item => {
-      if(item.id === editNoteId) {
-        item.note = modalInputText;
-        return item;
-      }
-      return item;
-    })
-    saveNotes(updatedNotes);
-    setIsRender(!isRender);
-  }
-
-  const onPressSaveEdit = () => {
-    handleEditItem(editNoteId);
-    setIsModalVisible(false);
-  }
-
-  const onPressItem = (item) => {
-    setIsModalVisible(true);
-    setModalInputText(item.note);
-    setEditNoteId(item.id);
-  }
-
-
-
-
   const openNote = note => {
-    navigation.navigate('NoteDetail', { note });
+    navigation.navigate('NoteDetail', { ...note });
   };
 
   const VisibleItem = props => {
     
     const {data,
-      rowHeightAnimatedValue, onDelete, rightActionState} = props;
-    const item = data.item.id;
-    console.log(item, '__________ itemid' )
+    rowHeightAnimatedValue, onDelete, rightActionState} = props;
+    const note = data.item;
+    // console.log(noteId, '__________ itemid' )
     // if (rightActionState) {
     //   onDelete();
     //   console.log("rightActionState");
@@ -147,9 +115,11 @@ const NoteList = () => {
     return (
       <Animated.View
         style={[styles.rowFront, {height: rowHeightAnimatedValue}]}>
-        <TouchableHighlight style={styles.rowFrontVisible} underlayColor={'#aaa'}
-        // onPress={() => onPressItem(data.item)}>
-        onPress={() => openNote(item)} >
+        <TouchableHighlight
+          style={styles.rowFrontVisible}
+          underlayColor={'#aaa'}
+          onPress={() => openNote(note)} 
+        >
           <View>
             <Text style={styles.details}>{data.item.note}</Text>
           </View>
@@ -164,8 +134,11 @@ const NoteList = () => {
     const rowHeightAnimatedValue = new Animated.Value(60);
     return (
       <View>
-        <VisibleItem data={data} rowMap={rowMap} rowHeightAnimatedValue={rowHeightAnimatedValue}
-        removeRow={() => deleteRow(data.item.id)}
+        <VisibleItem
+          data={data}
+          rowMap={rowMap}
+          rowHeightAnimatedValue={rowHeightAnimatedValue}
+          removeRow={() => deleteRow(data.item.key)}
         />
       </View>
     )
@@ -174,16 +147,6 @@ const NoteList = () => {
 
   const HiddenItemWithActions = props => {
     const {swipeAnimatedValue, leftActionActivated, rightActionActivated, rowActionAnimatedValue, rowHeightAnimatedValue, onDelete, rightActionState} = props;
-
-    // if (rightActionState) {
-    //   onDelete();
-    //   console.log("rightActionState");
-    //   Animated.timing(rowHeightAnimatedValue, {
-    //     toValue: 0,
-    //     duration: 0,
-    //     useNativeDriver: false,
-    //   });
-    // }
 
     if (rightActionActivated) {
       Animated.spring(rowActionAnimatedValue, {
@@ -257,7 +220,7 @@ const NoteList = () => {
       rowMap={rowMap}
       rowActionAnimatedValue={rowActionAnimatedValue}
       rowHeightAnimatedValue={rowHeightAnimatedValue}
-      onDelete={() => deleteRow(data.item.id) }
+      onDelete={() => deleteRow(data.item.key) }
       />
     )
   }
@@ -267,48 +230,26 @@ const NoteList = () => {
       // Background Linear Gradient
       colors={['white', 'rgba(60,60,60, 0.1)']}
       style={styles.gradient}>
-    <BlurView intensity={40} tint="light" style={styles.blurContainer}>
-      <SwipeListView
-        data={reverseNotes}
-        renderItem={renderItem}
-        renderHiddenItem={renderHiddenItem}
-        leftOpenValue={75}
-        rightOpenValue={-150}
-        disableRightSwipe
-        leftActivationValue={100}
-        rightActivationValue={-250}
-        leftActionValue={0}
-        rightActionValue={-400}
-        extraData={isRender}
-        onRightAction={(item) => deleteRow(item)}
-        onLeftAction={onLeftAction}
-        onLeftActionStatusChange={onLeftActionStatusChange}
-        onRightActionStatusChange={onRightActionStatusChange}
+      <BlurView intensity={40} tint="light" style={styles.blurContainer}>
+        <SwipeListView
+          data={reverseNotes}
+          renderItem={renderItem}
+          renderHiddenItem={renderHiddenItem}
+          leftOpenValue={75}
+          rightOpenValue={-150}
+          disableRightSwipe
+          leftActivationValue={100}
+          rightActivationValue={-250}
+          leftActionValue={0}
+          rightActionValue={-400}
+          extraData={isRender}
+          onRightAction={(item) => deleteRow(item)}
+          onLeftAction={onLeftAction}
+          onLeftActionStatusChange={onLeftActionStatusChange}
+          onRightActionStatusChange={onRightActionStatusChange}
 
-        />
-        </BlurView>
-        <Modal
-        animationType='slide'
-        visible={isModalVisible}
-        onRequestClose={() => setIsModalVisible(false)}>
-          <View style={styles.modalView}>
-            <TextInput
-            style={styles.modalTextInput}
-            onChangeText={(text) => setModalInputText(text)}
-            defaultValue={modalInputText}
-            editable={true}/>
-              
-            <TouchableOpacity
-              onPress={() => onPressSaveEdit()}
-              style={styles.touchableSave}
-            >
-              <Text style={styles.saveText}>Save</Text>
-
-            </TouchableOpacity>
-
-          </View>
-
-        </Modal>
+          />
+      </BlurView>
     </LinearGradient>
   )
 }

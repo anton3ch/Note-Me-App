@@ -15,7 +15,7 @@ const Header = (props) => {
       {/* <Ionicons name='list' style={styles.icons}
       onPress={() => props.onScreenChange(ScreenType.noteList)}
       /> */}
-      
+
       <Text style={styles.text}>Note Me</Text>
 
       {/* <Ionicons name='add'  style={styles.icons}

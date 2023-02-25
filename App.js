@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, SafeAreaView } from 'react-native';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Header from './src/components/Header';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenType } from './src/constants/constants';
@@ -10,7 +10,7 @@ import NoteList from './src/screens/NoteList';
 import NoteListController from './src/screens/NoteListController';
 import { ApplicationProvider } from '@ui-kitten/components';
 import * as eva from "@eva-design/eva";
-import { default as theme } from './custom-theme.json'; 
+import { default as theme } from './custom-theme.json';
 
 
 
@@ -58,32 +58,30 @@ export default function App() {
   // }
 
   return (
-    
+
     <LinearGradient
-        // Background Linear Gradient
-        colors={['white', 'rgba(60,60,60, 0.1)']}
-        style={styles.gradient}>
-          
-        <Header style={styles.header}
-        // onScreenChange={(screen) => {setScreen(screen)}}
-        />
-        <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
-      <View style={styles.container}>
-      <NavigationContainer>
-        {/* <TabNavigator/> */}
-        {/* <NoteList/> */}
-        <Tabs.Navigator>
-      
-          <Tabs.Screen name="NoteList" component={NoteListController} />
-          <Tabs.Screen name="AddNote" component={AddNote} />
-        </Tabs.Navigator>
-      </NavigationContainer>
-        <StatusBar style="auto" />
-        
-      </View>
+      // Background Linear Gradient
+      colors={['white', 'rgba(60,60,60, 0.1)']}
+      style={styles.gradient}>
+
+      <Header style={styles.header}
+      // onScreenChange={(screen) => {setScreen(screen)}}
+      />
+      <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+        <View style={styles.container}>
+          <NavigationContainer>
+            <Tabs.Navigator>
+
+              <Tabs.Screen name="NoteList" component={NoteListController} />
+              <Tabs.Screen name="AddNote" component={AddNote} />
+            </Tabs.Navigator>
+          </NavigationContainer>
+          <StatusBar style="auto" />
+
+        </View>
       </ApplicationProvider>
     </LinearGradient>
-    
+
   );
 }
 
