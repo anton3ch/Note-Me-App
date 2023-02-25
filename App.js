@@ -7,6 +7,7 @@ import { ScreenType } from './src/constants/constants';
 import AddNote from './src/screens/AddNote';
 import HomeScreen from './src/screens/HomeScreen';
 import NoteList from './src/screens/NoteList';
+import NoteListController from './src/screens/NoteListController';
 import { ApplicationProvider } from '@ui-kitten/components';
 import * as eva from "@eva-design/eva";
 import { default as theme } from './custom-theme.json'; 
@@ -64,7 +65,7 @@ export default function App() {
         style={styles.gradient}>
           
         <Header style={styles.header}
-        onScreenChange={(screen) => {setScreen(screen)}}
+        // onScreenChange={(screen) => {setScreen(screen)}}
         />
         <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
       <View style={styles.container}>
@@ -73,7 +74,7 @@ export default function App() {
         {/* <NoteList/> */}
         <Tabs.Navigator>
       
-          <Tabs.Screen name="NoteList" component={NoteList} />
+          <Tabs.Screen name="NoteList" component={NoteListController} />
           <Tabs.Screen name="AddNote" component={AddNote} />
         </Tabs.Navigator>
       </NavigationContainer>
