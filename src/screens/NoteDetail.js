@@ -1,11 +1,12 @@
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native'
 import React, {useState, useEffect} from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenType } from '../constants/constants';
+import {Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
-
-
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 
 
@@ -15,13 +16,16 @@ const NoteDetail = ({route, navigation}) => {
   const [notes, setNotes] = useState([]);
   const [note, setNote] = useState();
   const [modalInputText, setModalInputText] = useState();
-  const [editNoteId, setEditNoteId] = useState();
+  // const [editNoteId, setEditNoteId] = useState();
 
-  useEffect(() => {
-    getNotes();
-  }, []);
+  
+  useFocusEffect(
+    React.useCallback(() => {
+    getNote()
+  }, [])
+  );
 
-  const getNotes = async () => {
+  const getNote = async () => {
     const result = await AsyncStorage.getItem('NOTES');
     let notes = [];
     if (result !== null) notes = JSON.parse(result);
@@ -61,7 +65,7 @@ const NoteDetail = ({route, navigation}) => {
   }
 
   const handleChangeText = (text) => {
-    setModalInputText(text);
+    // setModalInputText(text);
     onPressSaveEdit(text);
   }
 
@@ -80,35 +84,68 @@ const NoteDetail = ({route, navigation}) => {
 
 
   return (
-    <View style={styles.container} >
-      <Text>
-        {noteId}
-      </Text>
-      <View style={styles.modalView}>
-            <TextInput
-            style={styles.modalTextInput}
-            onChangeText={(text) => handleChangeText(text)}
+      <LinearGradient
+        // Background Linear Gradient
+        colors={['white', 'rgba(60,60,60, 0.1)']}
+        style={styles.gradient}>
 
-            defaultValue={modalInputText}
-            editable={true}/>
-              
-            <TouchableOpacity
+    <BlurView intensity={40} tint="light" style={styles.blurContainer}>
+    <ScrollView style={styles.container} keyboardDismissMode='interactive'>
+      <TextInput
+      value={note}
+      multiline={true}
+      autoFocus
+      selectionColor='#fff'
+      style={styles.input}
+      defaultValue={modalInputText}
+      editable={true}
+      onChangeText={(text) => handleChangeText(text)}
+      />
+      <KeyboardAvoidingView keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.bottom}> 
+      <TouchableOpacity
               onPress={() => onPressSaveEdit()}
               style={styles.touchableSave}
             >
               {/* <Text style={styles.saveText}>Save</Text> */}
 
             </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </ScrollView>
+      </BlurView>
+    
+    </LinearGradient>
 
-          </View>
-    </View>
   )
 }
 
 export default NoteDetail
 
 const styles = StyleSheet.create({
-  container: {
-  
+  container:
+  {
+    flex: 1,
+    padding: 30,
+    paddingTop: 80,
+    // backgroundColor: 'rgba(171, 171, 171, 0.1)'
   },
-});
+  blurContainer: {
+    flex: 1,
+  },
+  bottom:
+  {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 36,
+  },
+  button:
+  {
+    marginBottom: 30,
+  },
+  gradient: {
+    flex: 1,
+  },
+  input: {
+    width: Dimensions.get('window').width,
+    height: 250,
+  },
+})
