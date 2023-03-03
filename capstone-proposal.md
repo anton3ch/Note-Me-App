@@ -17,5 +17,7 @@ Note reminders and usage infographic. Search bar. Dark mode.
 
 What additional tools, frameworks, libraries, APIs, or other resources will these additional features require?
 expo-notifications API
+Expo Haptics
+react-native-swipeable-list
 
 Is there anything else you'd like your instructor to know? 

@@ -1,14 +1,141 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { ImageBackground, StyleSheet, View, SafeAreaView, Appearance } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import Header from './../components/Header';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ScreenType } from './../constants/constants';
+import AddNote from './../screens/AddNote';
 
-const HomeScreen = () => {
+import NoteList from './NoteList';
+import NoteListController from './NoteListController';
+import { ApplicationProvider } from '@ui-kitten/components';
+import * as eva from "@eva-design/eva";
+// import { default as theme } from './custom-theme.json';
+import { BlurView } from 'expo-blur';
+import { Provider, useDispatch, useSelector } from 'react-redux';
+import { switchMode } from './../redux-store/actions';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+
+
+
+
+
+
+
+
+
+
+
+const Tabs = createBottomTabNavigator();
+
+
+
+export default function HomeScreen() {
+  const mode = useSelector(state => state.theme);
+  const [darkMode, setDarkMode] = useState(mode);
+  const [background, setBackground] = useState({uri: require('./../img/bg4.jpg')});
+  const [darkBackground, setDarkBackground] = useState({uri: require('./../img/bg-dark.jpg')});
+
+  const dispatch = useDispatch();
+  const handleModeChange = () => {
+    dispatch(switchMode());
+  }
+
+  useEffect(() => { 
+    setDarkMode(mode);
+  }, [mode]);
+
+  console.log(mode)
+
+
+  Appearance.addChangeListener(({ colorScheme }) => {
+    if(colorScheme === 'dark' && mode === 'light'){
+      handleModeChange();
+    } else if (colorScheme === 'light' && mode === 'dark'){
+      handleModeChange();
+    }
+  });
+
+  const theme = {
+    colors: {
+      primary: darkMode ? 'white' : 'grey',
+      background: "transparent",
+      text: darkMode ? 'white' : 'grey' ,
+    },
+  };
+
+
+
+
   return (
-    <View>
-      <Text>HomeScreen</Text>
-    </View>
-  )
+
+      <ImageBackground source = {darkMode ? darkBackground.uri : background.uri } style={styles.gradient} >
+
+        <BlurView intensity={20} tint="light" style={styles.blurContainer}>
+
+        <Header />
+        <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+          <View style={styles.container}>
+            <NavigationContainer theme={theme}>
+              <Tabs.Navigator>
+
+                <Tabs.Screen name="Note List" component={NoteListController} options={{headerShown: false}} />
+                <Tabs.Screen name="Add Note" component={AddNote} 
+                  options={{
+                    headerStyle: {
+                      backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
+                      borderBottomWidth: 1,
+                      borderColor:  darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(161, 161, 161, 1)',
+                      shadowColor: "gray",
+                      shadowOpacity: 0.7,
+                      shadowRadius: 5,
+                      shadowOffset: {width: 0, height: 5},
+                      
+                    },
+                    headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
+                  }}
+                />
+
+              </Tabs.Navigator>
+            </NavigationContainer>
+
+
+          </View>
+        </ApplicationProvider>
+
+      </BlurView>
+      </ImageBackground>
+
+  );
 }
 
-export default HomeScreen
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'rgba(171, 171, 171, 0.1)',
+    // padding: 30,
+    // backgroundColor: '#fff',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  gradient: {
+    flex: 1,
+    // backgroundColor: '#fff',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  text: {
+
+    width: "100%",
+    textAlign: "center",
+
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  blurContainer: {
+    flex: 1,
+  },
+});
+
