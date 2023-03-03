@@ -1,8 +1,8 @@
-import { ImageBackground, StyleSheet, View, Animated, TouchableHighlight, TouchableOpacity, StatusBar, Modal, TextInput } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { ImageBackground, StyleSheet, View, Animated, TouchableHighlight, TouchableOpacity, StatusBar, Modal, TextInput, Text, ScrollView } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Divider, List, ListItem, Text } from '@ui-kitten/components';
+// import { Divider, List, ListItem, Text } from '@ui-kitten/components';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from "@react-navigation/native"
 import { SwipeListView } from 'react-native-swipe-list-view';
@@ -11,7 +11,7 @@ import * as Sharing from 'expo-sharing';
 import { Share } from 'react-native';
 import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import {actions, RichEditor, RichToolbar, useRef} from "react-native-pell-rich-editor";
+import {actions, RichEditor, RichToolbar} from "react-native-pell-rich-editor";
 import SearchBar from '../components/SearchBar';
 import { useSelector } from 'react-redux';
 
@@ -30,13 +30,52 @@ const NoteList = () => {
   const mode = useSelector(state => state.theme);
   const [darkMode, setDarkMode] = useState(mode);
 
+  const [sortNewerFirst, setSortNewerFirst] = useState(true);
+
+  React.useEffect(() => {
+    // Use `setOptions` to update the button that we previously specified
+    // Now the button includes an `onPress` handler to update the count
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableHighlight onPress={() => {setSortNewerFirst(!sortNewerFirst); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.light);}} underlayColor="rgba(156, 156, 156, 0)"> 
+          <Ionicons name={sortNewerFirst ? 'arrow-down-circle-outline' : "arrow-up-circle-outline"} style={[styles.sortIcon,  darkMode ? {color: 'rgba(214, 214, 214, 1)'} : {color: 'rgba(61, 61, 61, 1)'} ]}
+          />
+      </TouchableHighlight>
+      ),
+    });
+  }, [sortNewerFirst, darkMode]);
 
   useEffect(() => { 
+    // reverseData(notes);
+    animateElement();
     setDarkMode(mode);
   }, [mode]);
 
 
-  let richText = React.createRef() || useRef();
+  const animateElement = () => {
+
+    Animated.timing(opacityAnimation, {
+      toValue: 0,
+      duration: 0,
+      useNativeDriver: false
+    }).start(() => {
+      Animated.timing(opacityAnimation, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: false
+      }).start()
+    });
+  };
+
+
+  const opacityAnimation = useRef(new Animated.Value(0)).current;
+
+
+
+  const opacityStyle = { opacity: opacityAnimation };
+
+
+  // let richText = React.createRef() || useRef();
 
 
   const saveNotes = async (data) => {
@@ -60,6 +99,7 @@ const NoteList = () => {
 
   const reverseData = data => {
     if(data !== null){
+      if(sortNewerFirst){
       return data.sort((a, b) => {
         const aInt = parseInt(a.time);
         const bInt = parseInt(b.time);
@@ -67,6 +107,15 @@ const NoteList = () => {
         if (aInt == bInt) return 0;
         if (aInt > bInt) return -1;
       })
+    } else {
+      return data.sort((b, a) => {
+        const aInt = parseInt(a.time);
+        const bInt = parseInt(b.time);
+        if (aInt < bInt) return 1;
+        if (aInt == bInt) return 0;
+        if (aInt > bInt) return -1;
+      })
+    }
     } else {
       return [];
     }
@@ -149,16 +198,23 @@ const NoteList = () => {
     //   });
     // }
 
+
     return (
+
       <Animated.View
-        style={[styles.rowFront, {height: rowHeightAnimatedValue}, darkMode && {shadowColor: 'rgba(36, 36, 36, 1)',}]}>
+        style={[styles.rowFront, {height: rowHeightAnimatedValue}, darkMode && {shadowColor: 'rgba(36, 36, 36, 1)'}]}>
+                
         <TouchableHighlight
           style={[styles.rowFrontVisible, darkMode && {backgroundColor: 'rgba(36, 36, 36, 1)',}]}
           underlayColor={'#aaa'}
-          onPress={() => {openNote(note); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);}} 
+          onPress={() => {openNote(note);}} 
         >
+          <LinearGradient
+        colors={['transparent', 'rgba(100,100,100, 0.2)']}
+        style={styles.gradientRow}>
           <View>
-            <Text style={styles.details}>{data.item.note}</Text>
+            <Text style={[styles.details, darkMode ? {color: 'rgba(162, 162, 162, 1)'}: {color: 'rgba(103, 103, 103, 1)'}]}>{data.item.note}</Text>
+            
             {/* <RichEditor
                         ref={richText}
                         initialContentHTML={data.item.note}
@@ -167,7 +223,9 @@ const NoteList = () => {
                         editorStyle={{contentCSSText: 'white'}}
                     /> */}
           </View>
+          </LinearGradient>
         </TouchableHighlight>
+        
       </Animated.View>
     )
   }
@@ -278,7 +336,7 @@ const NoteList = () => {
         // <BlurView intensity={30} tint="light" style={styles.blurContainer}>
         <LinearGradient
         // Background Linear Gradient
-        colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
+        colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.15)']}
         style={styles.gradient}>
           <SearchBar
             searchPhrase={searchPhrase}
@@ -287,6 +345,7 @@ const NoteList = () => {
             setClicked={setClicked}
             handleSearch={filteredData}
           />
+          <Animated.View style={[opacityStyle, {flex: 1}]} >
         <SwipeListView
           data={clicked ? filteredNotes :reverseNotes}
           renderItem={renderItem}
@@ -304,8 +363,12 @@ const NoteList = () => {
           onLeftActionStatusChange={onLeftActionStatusChange}
           onRightActionStatusChange={onRightActionStatusChange}
           style={styles.container}
+          
 
           />
+          
+
+          </Animated.View>
       {/*  </BlurView>
        </ImageBackground> */}
     </LinearGradient>
@@ -318,6 +381,13 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
   },
+  gradientRow: {
+    flex: 1,
+    padding: 10,
+    width: '100%',
+    height: '100%',
+    borderRadius: 5,
+  },
   blurContainer: {
     flex: 1,
   },
@@ -326,7 +396,7 @@ const styles = StyleSheet.create({
   },
   item: {
     height: 80,
-    borderRadius: "20px",
+    borderRadius: 20,
     margin: 20,
   },
   rowFront: {
@@ -345,7 +415,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     borderRadius: 5,
     height: 60,
-    padding: 10,
+    // padding: 10,
     marginBottom: 15,
   },
   rowBack: {
@@ -369,11 +439,11 @@ const styles = StyleSheet.create({
     width: 75,
   },
   backRightBtnLeft: {
-    backgroundColor: '#686df7',
+    backgroundColor: 'rgba(145, 152, 255, 1)',
     right: 75,
   },
   backRightBtnRight: {
-    backgroundColor: '#ff5263',
+    backgroundColor: 'rgba(255, 145, 145, 1)',
     right: 0,
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
@@ -390,8 +460,8 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   details: {
-    fontSize: 12,
-    color: '#999',
+    fontSize: 15,
+    // color: '#999',
   },
   modalView: {
     flex: 1,
@@ -411,8 +481,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
-  saveText: {
-
+  sortIcon: {
+    // padding: 15,
+    
+    marginRight: '80%',
+    fontSize: 28,
   },
 
 })

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { switchMode } from './../redux-store/actions';
 import { StatusBar } from 'expo-status-bar';
 import Animated, { Transitioning, FadeOut, AnimatedLayout, Transition, FadeIn, Layout } from 'react-native-reanimated';
-
+import * as Haptics from 'expo-haptics';
 
 
 
@@ -72,7 +72,7 @@ const Header = () => {
       {/* <Ionicons name='add'  style={styles.icons}
       onPress={() => props.onScreenChange(ScreenType.addNote)}
       /> */}
-      <TouchableHighlight onPress={() => handleModeChange()} accessibilityRole='button' aria-label='change dark mode' underlayColor="rgba(156, 156, 156, 0)">
+      <TouchableHighlight onPress={() => {handleModeChange(); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.light);}} accessibilityRole='button' aria-label='change dark mode' underlayColor="rgba(156, 156, 156, 0)">
         <Ionicons name={darkMode ? 'sunny-outline' : "moon-outline"} style={[styles.icons, darkMode && {color: 'rgba(214, 214, 214, 0.8)'}]}
         />
       </TouchableHighlight>
