@@ -1,5 +1,5 @@
-import { StyleSheet, View, Animated, TouchableHighlight, TouchableOpacity, StatusBar, Modal, TextInput } from 'react-native'
-import React, { useState } from 'react'
+import { ImageBackground, StyleSheet, View, Animated, TouchableHighlight, TouchableOpacity, StatusBar, Modal, TextInput } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Divider, List, ListItem, Text } from '@ui-kitten/components';
@@ -10,13 +10,32 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import * as Sharing from 'expo-sharing';
 import { Share } from 'react-native';
 import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
+import {actions, RichEditor, RichToolbar, useRef} from "react-native-pell-rich-editor";
+import SearchBar from '../components/SearchBar';
+import { useSelector } from 'react-redux';
 
+  
 
 const NoteList = () => {
   const [notes, setNotes] = useState([]);
+  const [filteredNotes, setFilteredNotes] = useState([]);
   const [isRender, setIsRender] = useState(false);
   const [modalInputText, setModalInputText] = useState();
   const navigation = useNavigation();
+  const [searchPhrase, setSearchPhrase] = useState("");
+  const [clicked, setClicked] = useState(false);
+  
+  const mode = useSelector(state => state.theme);
+  const [darkMode, setDarkMode] = useState(mode);
+
+
+  useEffect(() => { 
+    setDarkMode(mode);
+  }, [mode]);
+
+
+  let richText = React.createRef() || useRef();
 
 
 
@@ -40,13 +59,31 @@ const NoteList = () => {
   }
 
   const reverseData = data => {
-    return data.sort((a, b) => {
-      const aInt = parseInt(a.time);
-      const bInt = parseInt(b.time);
-      if (aInt < bInt) return 1;
-      if (aInt == bInt) return 0;
-      if (aInt > bInt) return -1;
+    if(data !== null){
+      return data.sort((a, b) => {
+        const aInt = parseInt(a.time);
+        const bInt = parseInt(b.time);
+        if (aInt < bInt) return 1;
+        if (aInt == bInt) return 0;
+        if (aInt > bInt) return -1;
+      })
+    } else {
+      return [];
+    }
+  };
+
+  const filteredData = (searchPhrase) => {
+    
+    const newData = notes.filter((item) => {
+      if (searchPhrase === "") {
+        return item;
+      }
+      // filter of the name
+      if (item.note.toLowerCase().trim().replace(/\s/g, "").includes(searchPhrase.toLowerCase().trim().replace(/\s/g, ""))) {
+        return item;
+      }
     });
+    setFilteredNotes(newData);
   };
 
   const reverseNotes = reverseData(notes);
@@ -114,14 +151,21 @@ const NoteList = () => {
 
     return (
       <Animated.View
-        style={[styles.rowFront, {height: rowHeightAnimatedValue}]}>
+        style={[styles.rowFront, {height: rowHeightAnimatedValue}, darkMode && {shadowColor: 'rgba(36, 36, 36, 1)',}]}>
         <TouchableHighlight
-          style={styles.rowFrontVisible}
+          style={[styles.rowFrontVisible, darkMode && {backgroundColor: 'rgba(36, 36, 36, 1)',}]}
           underlayColor={'#aaa'}
-          onPress={() => openNote(note)} 
+          onPress={() => {openNote(note); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);}} 
         >
           <View>
             <Text style={styles.details}>{data.item.note}</Text>
+            {/* <RichEditor
+                        ref={richText}
+                        initialContentHTML={data.item.note}
+                        disabled={true}
+                        style={{fontSize: 10}}
+                        editorStyle={{contentCSSText: 'white'}}
+                    /> */}
           </View>
         </TouchableHighlight>
       </Animated.View>
@@ -149,6 +193,8 @@ const NoteList = () => {
     const {swipeAnimatedValue, leftActionActivated, rightActionActivated, rowActionAnimatedValue, rowHeightAnimatedValue, onDelete, rightActionState} = props;
 
     if (rightActionActivated) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
+
       Animated.spring(rowActionAnimatedValue, {
         toValue: 500,
         useNativeDriver: false
@@ -183,7 +229,7 @@ const NoteList = () => {
     }
 
     return (
-      <Animated.View style={[styles.rowBack, {height: rowHeightAnimatedValue}]}>
+      <Animated.View style={[styles.rowBack, {height: rowHeightAnimatedValue}, darkMode && {backgroundColor: 'rgba(36, 36, 36, 0.5)',}]}>
         {/* <Text>Left</Text> */}
         {shareComponent}
 
@@ -226,13 +272,23 @@ const NoteList = () => {
   }
 
   return (
-    <LinearGradient
-      // Background Linear Gradient
-      colors={['white', 'rgba(60,60,60, 0.1)']}
-      style={styles.gradient}>
-      <BlurView intensity={40} tint="light" style={styles.blurContainer}>
+    
+    
+        // <ImageBackground source = {require('./../img/bg3.jpg')} style={styles.gradient} >
+        // <BlurView intensity={30} tint="light" style={styles.blurContainer}>
+        <LinearGradient
+        // Background Linear Gradient
+        colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
+        style={styles.gradient}>
+          <SearchBar
+            searchPhrase={searchPhrase}
+            setSearchPhrase={setSearchPhrase}
+            clicked={clicked}
+            setClicked={setClicked}
+            handleSearch={filteredData}
+          />
         <SwipeListView
-          data={reverseNotes}
+          data={clicked ? filteredNotes :reverseNotes}
           renderItem={renderItem}
           renderHiddenItem={renderHiddenItem}
           leftOpenValue={75}
@@ -247,9 +303,11 @@ const NoteList = () => {
           onLeftAction={onLeftAction}
           onLeftActionStatusChange={onLeftActionStatusChange}
           onRightActionStatusChange={onRightActionStatusChange}
+          style={styles.container}
 
           />
-      </BlurView>
+      {/*  </BlurView>
+       </ImageBackground> */}
     </LinearGradient>
   )
 }
@@ -264,10 +322,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   container: {
-    padding: 20,
-    height: '100%',
-    borderRadius: "20px",
-    backgroundColor: 'rgba(60,60,60, 0.1)',
+    paddingTop: 0,
   },
   item: {
     height: 80,
@@ -276,7 +331,7 @@ const styles = StyleSheet.create({
   },
   rowFront: {
     backgroundColor: '#FFF',
-    borderRadius: 5,
+    borderRadius: 6,
     height: 60,
     margin: 5,
     marginBottom: 15,
@@ -295,7 +350,8 @@ const styles = StyleSheet.create({
   },
   rowBack: {
     alignItems: 'center',
-    backgroundColor: '#DDD',
+    // width: '99%',
+    backgroundColor: 'rgba(156, 156, 156, 0.3)',
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -313,11 +369,11 @@ const styles = StyleSheet.create({
     width: 75,
   },
   backRightBtnLeft: {
-    backgroundColor: '#1f65ff',
+    backgroundColor: '#686df7',
     right: 75,
   },
   backRightBtnRight: {
-    backgroundColor: 'red',
+    backgroundColor: '#ff5263',
     right: 0,
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,
