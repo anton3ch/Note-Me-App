@@ -1,5 +1,6 @@
 const { getDefaultConfig } = require('metro-config');
 
+/* eslint-env node */
 module.exports = (async () => {
   const {
     resolver: { sourceExts, assetExts },
