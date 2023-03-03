@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView } from 'react-native'
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, ImageBackground } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenType } from '../constants/constants';
@@ -7,16 +7,26 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-
+import { useSelector } from 'react-redux';
+import { format } from 'date-fns';
 
 
 const NoteDetail = ({ route, navigation }) => {
-
+  const date = format(route.params.time, 'MMMM dd, yyyy HH:MMa');
   const [noteId, setNoteId] = useState(route.params.id);
   const [notes, setNotes] = useState([]);
   const [note, setNote] = useState(route.params);
+  const [noteCreationDate] = useState(date);
   const [modalInputText, setModalInputText] = useState(route.params.note);
-  console.log(route.params, 'psramas');
+
+  
+  const [background] = useState({uri: require('./../img/bg4.jpg')});
+  const [darkBackground] = useState({uri: require('./../img/bg-dark.jpg')});
+  const mode = useSelector(state => state.theme);
+  const [darkMode, setDarkMode] = useState(mode);
+  useEffect(() => { 
+    setDarkMode(mode);
+  }, [mode]);
 
   const saveNotes = async (data) => {
     await AsyncStorage.setItem("NOTES", JSON.stringify(data));
@@ -45,19 +55,29 @@ const NoteDetail = ({ route, navigation }) => {
     handleEditItem(noteId, text);
   }
 
+
+
+
   return (
+    <ImageBackground source = {darkMode ? darkBackground.uri : background.uri } style={styles.gradient} >
+    <BlurView intensity={40} tint="light" style={styles.blurContainer}>
+      
+
     <LinearGradient
       // Background Linear Gradient
-      colors={['white', 'rgba(60,60,60, 0.1)']}
+      colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
       style={styles.gradient}>
-      <BlurView intensity={40} tint="light" style={styles.blurContainer}>
+      {/* <BlurView intensity={40} tint="light" style={styles.blurContainer}> */}
         <ScrollView style={styles.container} keyboardDismissMode='interactive'>
+          <View style={styles.dateView}>
+            <Text style={[darkMode ? {color: 'rgba(177, 177, 177, 1)'} : {color: 'rgba(177, 177, 177, 1)'}]}>Created: {noteCreationDate}</Text>
+          </View>
           <TextInput
             value={note}
             multiline={true}
             autoFocus
             selectionColor='#fff'
-            style={styles.input}
+            style={[styles.input, darkMode && {color: 'white'}]}
             defaultValue={modalInputText}
             editable={true}
             onChangeText={(text) => handleChangeText(text)}
@@ -66,8 +86,10 @@ const NoteDetail = ({ route, navigation }) => {
 
           </KeyboardAvoidingView>
         </ScrollView>
-      </BlurView>
+      {/* </BlurView> */}
     </LinearGradient>
+    </BlurView>
+  </ImageBackground>
   )
 }
 
@@ -78,7 +100,7 @@ const styles = StyleSheet.create({
   {
     flex: 1,
     padding: 30,
-    paddingTop: 80,
+    paddingTop: 50,
     // backgroundColor: 'rgba(171, 171, 171, 0.1)'
   },
   blurContainer: {
@@ -100,5 +122,13 @@ const styles = StyleSheet.create({
   input: {
     width: Dimensions.get('window').width,
     height: 250,
+  },
+  dateView: {
+    flex: 1,
+    width: "100%",
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: -40,
   },
 })
