@@ -1,5 +1,5 @@
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, ImageBackground } from 'react-native'
-import React, { useState, useEffect } from 'react'
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, ImageBackground, Button } from 'react-native'
+import React, { useState, useEffect, useRef } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenType } from '../constants/constants';
 import { Dimensions } from 'react-native';
@@ -9,15 +9,28 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useSelector } from 'react-redux';
 import { format } from 'date-fns';
+// import {schedulePushNotification} from './../components/Notifications';
+
+import { useNavigation } from "@react-navigation/native"
 
 
-const NoteDetail = ({ route, navigation }) => {
+
+
+
+
+
+
+/////
+
+const NoteDetail = ({ route }) => {
   const date = format(route.params.time, 'MMMM dd, yyyy HH:MMa');
   const [noteId, setNoteId] = useState(route.params.id);
   const [notes, setNotes] = useState([]);
   const [note, setNote] = useState(route.params);
   const [noteCreationDate] = useState(date);
   const [modalInputText, setModalInputText] = useState(route.params.note);
+  const navigation = useNavigation();
+
 
   
   const [background] = useState({uri: require('./../img/bg4.jpg')});
@@ -55,6 +68,9 @@ const NoteDetail = ({ route, navigation }) => {
     handleEditItem(noteId, text);
   }
 
+  const openScheduler = (note) => {
+    navigation.navigate('NotificationScreen', { ...note });
+  };
 
 
 
@@ -84,6 +100,7 @@ const NoteDetail = ({ route, navigation }) => {
           />
           <KeyboardAvoidingView keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.bottom}>
 
+          <Button title="Schedule" onPress={() => {openScheduler(note)}} />
           </KeyboardAvoidingView>
         </ScrollView>
       {/* </BlurView> */}

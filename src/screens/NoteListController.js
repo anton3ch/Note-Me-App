@@ -16,6 +16,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { BlurView } from '../../node_modules/expo-blur/build/index';
 import { useSelector } from 'react-redux';
+import NotificationScreen from './NotificationScreen';
 
 
 const Stack = createStackNavigator();
@@ -58,6 +59,19 @@ export default function NoteListController() {
           headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
         }}
       />
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{
+          headerStyle: {
+            backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
+            borderBottomWidth: 1,
+            borderColor: 'rgba(161, 161, 161, 1)',
+            shadowColor: "gray",
+            shadowOpacity: 0.7,
+            shadowRadius: 5,
+            shadowOffset: {width: 0, height: 5},
+            
+          },
+          headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
+        }}/>
     </Stack.Navigator>
   );
 }
