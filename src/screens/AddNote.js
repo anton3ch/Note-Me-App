@@ -1,4 +1,4 @@
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, Button, ScrollView } from 'react-native'
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, View, Button, ScrollView, TouchableHighlight } from 'react-native'
 import React, { useState, Component, useEffect } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScreenType } from '../constants/constants';
@@ -14,7 +14,7 @@ import { useSelector } from 'react-redux';
 // import {actions, RichEditor, RichToolbar} from "react-native-pell-rich-editor";
 
 const AddNote = () => {
-  const [note, setNote] = useState();
+  const [note, setNote] = useState('');
   const navigation = useNavigation();
 
   const mode = useSelector(state => state.theme);
@@ -60,8 +60,10 @@ const AddNote = () => {
         selectionColor='#fff'
         style={[styles.input, darkMode && {color: "white"} ]}
       />
-      <KeyboardAvoidingView keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.bottom}> 
+
+      <KeyboardAvoidingView keyboardVerticalOffset={0} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.bottom}> 
         {renderButton}
+
       </KeyboardAvoidingView>
 
       {/* <ScrollView>
@@ -107,18 +109,18 @@ const styles = StyleSheet.create({
   {
     flex: 1,
     justifyContent: 'flex-end',
-    paddingBottom: 36,
+    paddingBottom: 0,
   },
   button:
   {
-    marginBottom: 30,
+    marginBottom: 0,
   },
   gradient: {
     flex: 1,
   },
   input: {
     width: Dimensions.get('window').width,
-    height: 250,
+    minHeight: 340,
   },
   whiteText: {
     color: 'white',

@@ -23,7 +23,7 @@ import { useNavigation } from "@react-navigation/native"
 /////
 
 const NoteDetail = ({ route }) => {
-  const date = format(route.params.time, 'MMMM dd, yyyy HH:MMa');
+  const date = format(route.params.time, 'MMMM dd, yyyy hh:mma');
   const [noteId, setNoteId] = useState(route.params.id);
   const [notes, setNotes] = useState([]);
   const [note, setNote] = useState(route.params);

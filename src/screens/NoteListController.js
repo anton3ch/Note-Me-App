@@ -37,7 +37,7 @@ export default function NoteListController() {
           headerStyle: {
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
             borderBottomWidth: 1,
-            borderColor: 'rgba(161, 161, 161, 1)',
+            borderColor:  darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(200, 200, 200, 0.9)',
             shadowColor: "gray",
             shadowOpacity: 0.7,
             shadowRadius: 5,
@@ -50,7 +50,7 @@ export default function NoteListController() {
           headerStyle: {
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
             borderBottomWidth: 1,
-            borderColor: 'rgba(161, 161, 161, 1)',
+            borderColor:  darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(200, 200, 200, 0.9)',
             shadowColor: "gray",
             shadowOpacity: 0.9,
             shadowRadius: 7,
@@ -63,7 +63,7 @@ export default function NoteListController() {
           headerStyle: {
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
             borderBottomWidth: 1,
-            borderColor: 'rgba(161, 161, 161, 1)',
+            borderColor:  darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(200, 200, 200, 0.9)',
             shadowColor: "gray",
             shadowOpacity: 0.7,
             shadowRadius: 5,

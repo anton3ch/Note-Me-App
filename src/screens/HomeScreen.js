@@ -1,5 +1,5 @@
-import { ImageBackground, StyleSheet, View, SafeAreaView, Appearance } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { ImageBackground, StyleSheet, View, SafeAreaView, Appearance, Animated } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import Header from './../components/Header';
 import { LinearGradient } from 'expo-linear-gradient';
 import { ScreenType } from './../constants/constants';
@@ -42,10 +42,12 @@ export default function HomeScreen() {
   }
 
   useEffect(() => { 
+    animateElement();
     setDarkMode(mode);
+    
   }, [mode]);
 
-  console.log(mode)
+  console.log(Appearance.getColorScheme())
 
 
   Appearance.addChangeListener(({ colorScheme }) => {
@@ -64,11 +66,36 @@ export default function HomeScreen() {
     },
   };
 
+  const animateElement = () => {
+
+    Animated.timing(opacityAnimation, {
+      toValue: 0,
+      duration: 5,
+      useNativeDriver: true
+    }).start(() => {
+      Animated.timing(opacityAnimation, {
+        toValue: 1,
+        duration: 1500,
+        useNativeDriver: true
+      }).start()
+    })
+  };
+
+
+
+  const opacityAnimation = useRef(new Animated.Value(0)).current;
+
+
+  const opacityStyle = { opacity: opacityAnimation };
+
+
 
 
 
   return (
+    <View style={[{flex:1,backgroundColor: 'rgba(75, 75, 75, 1)' }, darkMode && {backgroundColor: 'rgba(226, 226, 226, 1)'}]}>
 
+    <Animated.View style={[styles.box, opacityStyle]}>
       <ImageBackground source = {darkMode ? darkBackground.uri : background.uri } style={styles.gradient} >
 
         <BlurView intensity={20} tint="light" style={styles.blurContainer}>
@@ -85,7 +112,7 @@ export default function HomeScreen() {
                     headerStyle: {
                       backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
                       borderBottomWidth: 1,
-                      borderColor:  darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(161, 161, 161, 1)',
+                      borderColor:  darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(200, 200, 200, 0.9)',
                       shadowColor: "gray",
                       shadowOpacity: 0.7,
                       shadowRadius: 5,
@@ -103,9 +130,10 @@ export default function HomeScreen() {
           </View>
         </ApplicationProvider>
 
-      </BlurView>
+        </BlurView>
       </ImageBackground>
-
+    </Animated.View>
+    </View>
   );
 }
 
@@ -121,6 +149,7 @@ const styles = StyleSheet.create({
   },
   gradient: {
     flex: 1,
+    // opacity: 0,
     // backgroundColor: '#fff',
     // alignItems: 'center',
     // justifyContent: 'center',
@@ -136,6 +165,11 @@ const styles = StyleSheet.create({
   },
   blurContainer: {
     flex: 1,
+  },
+  box: {
+    flex: 1,
+    backgroundColor: 'black',
+    // opacity: 1,
   },
 });
 

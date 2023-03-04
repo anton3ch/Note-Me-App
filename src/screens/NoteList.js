@@ -15,6 +15,7 @@ import {actions, RichEditor, RichToolbar, useRef} from "react-native-pell-rich-e
 import SearchBar from '../components/SearchBar';
 import { useSelector } from 'react-redux';
 
+
   
 
 const NoteList = () => {
@@ -36,7 +37,6 @@ const NoteList = () => {
 
 
   let richText = React.createRef() || useRef();
-
 
 
   const saveNotes = async (data) => {
@@ -297,7 +297,7 @@ const NoteList = () => {
           leftActivationValue={100}
           rightActivationValue={-250}
           leftActionValue={0}
-          rightActionValue={-400}
+          rightActionValue={-300}
           extraData={isRender}
           onRightAction={(item) => deleteRow(item)}
           onLeftAction={onLeftAction}
