@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Button, Keyboard, View, StyleSheet, TextInput, Pressable, Text } from 'react-native';
+import { Animated, Button, Keyboard, View, StyleSheet, TextInput, Pressable, Text, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useSelector } from 'react-redux';
-
+import * as Haptics from 'expo-haptics';
 
 const SearchBar = ({clicked, searchPhrase, setSearchPhrase, setClicked, handleSearch}) => {
 
@@ -10,7 +10,6 @@ const SearchBar = ({clicked, searchPhrase, setSearchPhrase, setClicked, handleSe
 
   const mode = useSelector(state => state.theme);
   const [darkMode, setDarkMode] = useState(mode);
-  console.log(darkMode, 'dark')
 
   useEffect(() => { 
     setDarkMode(mode);
@@ -32,7 +31,7 @@ const SearchBar = ({clicked, searchPhrase, setSearchPhrase, setClicked, handleSe
 
   const onSearch = (text) => {
     setSearchPhrase(text);
-    handleSearch(text)
+    handleSearch(text);
   }
   return (
     <View style={styles.container}>
@@ -62,10 +61,10 @@ const SearchBar = ({clicked, searchPhrase, setSearchPhrase, setClicked, handleSe
         {/* cross Icon, depending on whether the search bar is clicked or not */}
         
         {clicked && (
-          <Ionicons name='refresh' style={[styles.icons, darkMode && {color: 'rgba(`161, 161, 161, 1)'}]}
-          color='rgba(61, 61, 61, 1)'
-          onPress={() => { onSearch("") } }
-          />
+    <TouchableOpacity onPress={() => { onSearch("");Haptics.impactAsync(Haptics.ImpactFeedbackStyle.light); }}>
+            <Ionicons name='refresh' style={[styles.icons, darkMode && {color: 'rgba(`161, 161, 161, 1)'}]} color='rgba(61, 61, 61, 1)'
+            />
+          </TouchableOpacity>
         )}
       </View>
       {/* cancel button, depending on whether the search bar is clicked or not */}
