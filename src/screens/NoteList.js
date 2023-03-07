@@ -14,6 +14,7 @@ import * as Haptics from 'expo-haptics';
 import {actions, RichEditor, RichToolbar} from "react-native-pell-rich-editor";
 import SearchBar from '../components/SearchBar';
 import { useSelector } from 'react-redux';
+import { VirtualizedScrollView } from 'react-native-virtualized-view';
 
 
   
@@ -36,12 +37,14 @@ const NoteList = () => {
     // Use `setOptions` to update the button that we previously specified
     // Now the button includes an `onPress` handler to update the count
     navigation.setOptions({
-      headerRight: () => (
-        <TouchableHighlight onPress={() => {setSortNewerFirst(!sortNewerFirst); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.light);}} underlayColor="rgba(156, 156, 156, 0)"> 
-          <Ionicons name={sortNewerFirst ? 'arrow-down-circle-outline' : "arrow-up-circle-outline"} style={[styles.sortIcon,  darkMode ? {color: 'rgba(214, 214, 214, 1)'} : {color: 'rgba(61, 61, 61, 1)'} ]}
-          />
-      </TouchableHighlight>
-      ),
+      headerRight: () => { return (
+        <TouchableHighlight style={styles.sortContainer} onPress={() => {setSortNewerFirst(!sortNewerFirst); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.light);}} underlayColor="rgba(156, 156, 156, 0)"> 
+          <View style={styles.sortView}>
+            <Ionicons name={sortNewerFirst ? 'arrow-down-circle-outline' : "arrow-up-circle-outline"} style={[styles.sortIcon,  darkMode ? {color: 'rgba(214, 214, 214, 1)'} : {color: 'rgba(61, 61, 61, 1)'} ]}/>
+            <Text style={[styles.sortText, darkMode ? {color: 'rgba(214, 214, 214, 1)'} : {color: 'rgba(61, 61, 61, 1)'} ]}>Sort</Text>
+          </View>
+        </TouchableHighlight>
+      )},
     });
   }, [sortNewerFirst, darkMode]);
 
@@ -206,7 +209,7 @@ const NoteList = () => {
                 
         <TouchableHighlight
           style={[styles.rowFrontVisible, darkMode && {backgroundColor: 'rgba(36, 36, 36, 1)',}]}
-          underlayColor={'#aaa'}
+          underlayColor={darkMode ? 'rgba(20, 20, 20, 1)' : '#ddd' }
           onPress={() => {openNote(note);}} 
         >
           <LinearGradient
@@ -294,7 +297,7 @@ const NoteList = () => {
         <Animated.View style={[styles.backRightBtn, styles.backRightBtnRight, {
           flex: 1, width: rowActionAnimatedValue
         }]}>
-          <TouchableOpacity  onPress={onDelete}
+          <TouchableHighlight  onPress={onDelete} 
           style={[styles.backRightBtn, styles.backRightBtnRight]}>
             <Animated.View style={[styles.trash, {
               transform: [
@@ -309,7 +312,7 @@ const NoteList = () => {
             }]}>
               <Ionicons name="trash-outline" size={25} color='#fff'/>
             </Animated.View>
-          </TouchableOpacity>
+          </TouchableHighlight>
         </Animated.View>
 
       </Animated.View>
@@ -338,6 +341,8 @@ const NoteList = () => {
         // Background Linear Gradient
         colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.15)']}
         style={styles.gradient}>
+
+
           <SearchBar
             searchPhrase={searchPhrase}
             setSearchPhrase={setSearchPhrase}
@@ -362,6 +367,7 @@ const NoteList = () => {
           onLeftAction={onLeftAction}
           onLeftActionStatusChange={onLeftActionStatusChange}
           onRightActionStatusChange={onRightActionStatusChange}
+          keyboardShouldPersistTaps='handled'
           style={styles.container}
           
 
@@ -482,11 +488,30 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   sortIcon: {
-    // padding: 15,
-    
-    marginRight: '80%',
-    fontSize: 28,
+    fontSize: 26,
+    // flex: 1,
+    // width: 33,
+    // textAlign: 'center',
   },
-
+  sortText: {
+    fontSize: 9,
+    paddingRight: 2,
+  },
+  sortContainer: {
+    flex: 1,
+    position: 'absolute',
+    left: 18,
+    // width: 33,
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    // flexDirection: 'column',
+  },
+  sortView: {
+    flex: 1,
+    width: 33,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  }
 })
 
