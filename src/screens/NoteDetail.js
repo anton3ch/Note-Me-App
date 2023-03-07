@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, ImageBackground, Button } from 'react-native'
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, ImageBackground, Button, Platform, Modal } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenType } from '../constants/constants';
@@ -12,8 +12,8 @@ import { format } from 'date-fns';
 // import {schedulePushNotification} from './../components/Notifications';
 
 import { useNavigation } from "@react-navigation/native"
-
-
+import * as Haptics from 'expo-haptics';
+import NotificationScreen from './NotificationScreen'
 
 
 
@@ -29,6 +29,7 @@ const NoteDetail = ({ route }) => {
   const [note, setNote] = useState(route.params);
   const [noteCreationDate] = useState(date);
   const [modalInputText, setModalInputText] = useState(route.params.note);
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
 
 
@@ -40,6 +41,16 @@ const NoteDetail = ({ route }) => {
   useEffect(() => { 
     setDarkMode(mode);
   }, [mode]);
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => { return (
+        <TouchableOpacity style={styles.scheduleContainer} onPress={() => {setModalVisible(!modalVisible); Haptics.impactAsync(Haptics.ImpactFeedbackStyle.light);}}>
+          <Ionicons name="alarm-outline" style={[styles.sortIcon,  darkMode ? {color: 'rgba(214, 214, 214, 1)'} : {color: 'rgba(61, 61, 61, 1)'} ]} /><Text style={[styles.scheduleText, darkMode ? {color: 'rgba(214, 214, 214, 1)'} : {color: 'rgba(61, 61, 61, 1)'} ]}>Schedule</Text>
+        </TouchableOpacity>
+      )},
+    });
+  }, [darkMode, modalVisible]);
 
   const saveNotes = async (data) => {
     await AsyncStorage.setItem("NOTES", JSON.stringify(data));
@@ -55,7 +66,7 @@ const NoteDetail = ({ route }) => {
     console.log(noteId, 'noteId');
     const updatedNotes = notes.filter(item => {
       if (item.id === noteId) {
-        console.log('inside', text);
+        console.log('update note', text);
         item["note"] = text;
         return item;
       }
@@ -72,38 +83,60 @@ const NoteDetail = ({ route }) => {
     navigation.navigate('NotificationScreen', { ...note });
   };
 
+  const handleModal = () => {
+    setModalVisible(!modalVisible);
+  }
+
 
 
   return (
     <ImageBackground source = {darkMode ? darkBackground.uri : background.uri } style={styles.gradient} >
-    <BlurView intensity={40} tint="light" style={styles.blurContainer}>
-      
-
+    <BlurView intensity={40} tint="light" style={styles.blurContainer} keyboardShouldPersistTaps='handled' keyboardDismissMode='onDrag'>
     <LinearGradient
       // Background Linear Gradient
+      keyboardDismissMode='onDrag'
       colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
       style={styles.gradient}>
       {/* <BlurView intensity={40} tint="light" style={styles.blurContainer}> */}
-        <ScrollView style={styles.container} keyboardDismissMode='interactive'>
-          <View style={styles.dateView}>
-            <Text style={[darkMode ? {color: 'rgba(177, 177, 177, 1)'} : {color: 'rgba(177, 177, 177, 1)'}]}>Created: {noteCreationDate}</Text>
-          </View>
-          <TextInput
-            value={note}
-            multiline={true}
-            autoFocus
-            selectionColor='#fff'
-            style={[styles.input, darkMode && {color: 'white'}]}
-            defaultValue={modalInputText}
-            editable={true}
-            onChangeText={(text) => handleChangeText(text)}
-          />
-          <KeyboardAvoidingView keyboardVerticalOffset={150} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.bottom}>
+      <View style={styles.dateView}>
+        <Text style={[darkMode ? {color: 'rgba(177, 177, 177, 1)'} : {color: 'rgba(177, 177, 177, 1)'}]}>Created: {noteCreationDate}</Text>
+      </View>
 
-          <Button title="Schedule" onPress={() => {openScheduler(note)}} />
+
+          
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
+            <TextInput
+              value={note}
+              multiline={true}
+              autoFocus
+              selectionColor='#fff'
+              style={[styles.input, darkMode && {color: 'white'}]}
+              defaultValue={modalInputText}
+              editable={true}
+              onChangeText={(text) => handleChangeText(text)}
+            />
           </KeyboardAvoidingView>
-        </ScrollView>
+
       {/* </BlurView> */}
+      <View style={styles.centeredView}> 
+
+      
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        // onRequestClose={() => {
+        //   console.log('Modal has been closed.');
+        //   setModalVisible(!modalVisible);
+        // }}
+        >
+      <NotificationScreen noteId={noteId} handleModal={handleModal}></NotificationScreen>
+      <TouchableOpacity style={styles.closeContainer} onPress={() => setModalVisible(!modalVisible)}>
+        <Ionicons style={styles.closeIcon} name="close-outline"/>
+      </TouchableOpacity>
+      </Modal>
+      </View>
+
     </LinearGradient>
     </BlurView>
   </ImageBackground>
@@ -116,29 +149,29 @@ const styles = StyleSheet.create({
   container:
   {
     flex: 1,
-    padding: 30,
-    paddingTop: 50,
+    // paddingTop: 50, 
+    
     // backgroundColor: 'rgba(171, 171, 171, 0.1)'
   },
   blurContainer: {
     flex: 1,
   },
-  bottom:
-  {
-    flex: 1,
-    justifyContent: 'flex-end',
-    paddingBottom: 36,
-  },
-  button:
-  {
-    marginBottom: 30,
-  },
   gradient: {
     flex: 1,
   },
   input: {
-    width: Dimensions.get('window').width,
-    height: 250,
+    // height: '100%',
+    margin: 30,
+    marginTop: 50,
+    marginRight: 0,
+    paddingRight: 30,
+    height: Dimensions.get('window').height,
+  },
+  alarm: {
+    fontSize: 30,
+    color: 'rgba(145, 152, 255, 1)',
+    transform: [{rotate: '19deg'}],
+
   },
   dateView: {
     flex: 1,
@@ -146,6 +179,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'absolute',
-    top: -40,
+    top: 10,
+  },
+  sortIcon: {
+    fontSize: 28,
+  },
+  scheduleText: {
+    fontSize: 9,
+  },
+  scheduleContainer: {
+    flex: 1,
+    position: 'absolute',
+    left: 5,
+    width: 39,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+  },
+  closeContainer: {
+    position: 'absolute',
+    right: 16,
+    top: 48,
+  },
+  closeIcon: {
+    fontSize: 35,
+    color: 'black'
   },
 })
