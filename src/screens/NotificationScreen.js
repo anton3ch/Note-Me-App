@@ -10,6 +10,7 @@ import {  Platform } from "react-native";
 import * as Device from 'expo-device';
 import { format } from 'date-fns';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux';
 
 
 Notifications.setNotificationHandler({
@@ -21,19 +22,23 @@ Notifications.setNotificationHandler({
 });
 
 
-export async function schedulePushNotification(body, title, dateOfReminder) {
+export async function schedulePushNotification(body, title, dateOfReminder, noteId) {
+  if(title === '') {
+    title = "⏰ Note Me ⏰"
+  }
 
   const id = await Notifications.scheduleNotificationAsync({
     content: {
       title: title,
-      body: body,
+      body: body.replaceAll(/\n\s*\n/g, '\n').replaceAll(/[^\S\n]+(?![^\S\n])/g, ' ').trim(),
+      data: { noteId },
       // sound: 'default',
     },
     trigger: {
-      seconds: 0,
+      seconds: 2,
       repeats: false,
       channelId: 'default',
-      date: dateOfReminder,
+      // date: dateOfReminder,
     },
   });
   console.log("notif id on scheduling",id)
@@ -59,11 +64,15 @@ export async function cancelNotification(notifId){
 }
 
 ////////////////////////////////////////////////////////
-export default function NotificationScreen({ route }) {
+export default function NotificationScreen(props) {
+  const mode = useSelector(state => state.theme);
+  const [darkMode, setDarkMode] = useState(mode);
   //note info
   const [noteBody, setNoteBody] = useState();
-  const [noteId, setNoteId] = useState(route.params.id);
-  const [title, setTitle] = useState('Note Reminder');
+  const [noteId, setNoteId] = useState(props.noteId);
+  // const [title, setTitle] = useState('Note Reminder');
+  const [title, setTitle] = useState('');
+
 
   //notification 
   const [expoPushToken, setExpoPushToken] = useState('');
@@ -71,7 +80,7 @@ export default function NotificationScreen({ route }) {
   const notificationListener = useRef();
   const responseListener = useRef();
   //date picker
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState();
   const [timeOfSelection, setTimeOfSelection] = useState(0);
   const [datePickerVisible, setDatePickerVisible] = useState(false);
   
@@ -135,7 +144,7 @@ export default function NotificationScreen({ route }) {
   }, []);
 
   const handleScheduling = () => {
-    schedulePushNotification(noteBody, title, selectedDate)
+    schedulePushNotification(noteBody, title, selectedDate, noteId)
   }
 
 
@@ -157,30 +166,38 @@ export default function NotificationScreen({ route }) {
 
   const navigation = useNavigation();
 
+  let scheduleButton;
+  if(selectedDate){
+    scheduleButton = <View style={styles.scheduleButton}><Button title="Schedule" onPress={()=>{handleScheduling(), props.handleModal()}} /></View>
+  }
 
 
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={[{flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.9)', }, darkMode && {backgroundColor: 'rgba(60, 60, 60, 0.9)'}]}>
       <View
         style={{
           padding: 20,
           flex: 1,
-          display: 'flex',
+          height: 100,
+          // display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
         }}
       >
-        <Text>Choose the notification title:</Text>
+        <Text style={[{fontSize: 18}, darkMode && {color: 'white'}]}>Choose the notification title:</Text>
         <TextInput
-          style={styles.textInput}
-          placeholder="Title"
-          value={title}
+          style={[styles.textInput, darkMode && {color: 'white'}]}
+          placeholder="My custom note reminder"
+          // value={title}
           onChangeText={(text) => setTitle(text)}
-          maxLength={20} 
+          maxLength={33} 
+          placeholderTextColor={darkMode ? "rgba(230, 230, 230, 0.8)" : "rgba(100, 100, 100, 0.8)" }
         />
         <DateTimePickerModal
-          // textColor="white"
+          textColor={darkMode ? "black": 'black'}
+          themeVariant={darkMode ? "dark": 'light'}
+          // style={{backgroundColor: 'rgba(200,200,200,0.5)',}} 
           date={selectedDate}
           isVisible={datePickerVisible}
           minimumDate={new Date()}
@@ -190,11 +207,11 @@ export default function NotificationScreen({ route }) {
           onCancel={hideDatePicker}
           onChange={handleDateChange}
         />
-        <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 20, }}>
-          {selectedDate ? selectedDate.toLocaleDateString() : 'No date selected'}
+        <Text style={[styles.date, { fontSize: 24, marginBottom: 20, }, darkMode && {color: 'white', borderColor: 'gray',}]} onPress={()=>{showDatePicker(); setSelectedDate(new Date())}}>
+          {selectedDate ? selectedDate.toLocaleString('en-US', {dateStyle: "full", timeStyle: 'short'}) : 'Select a date'}
         </Text>
-        <Button title="Select a date" onPress={showDatePicker} />
-        <Button title="Schedule" onPress={handleScheduling} />
+        {/* <Button title={selectedDate ? 'Change date' : ""} onPress={()=>{showDatePicker(); setSelectedDate(new Date())}} /> */}
+        {scheduleButton}
         
       </View>
     </View>
@@ -204,7 +221,30 @@ export default function NotificationScreen({ route }) {
 
 const styles = StyleSheet.create({
   textInput: {
-    backgroundColor: 'white',
-    width: 200,
+    backgroundColor: 'rgba(200,200,200,0.5)',
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 30,
+    textAlign: 'center',
+    width: 250,
+    borderRadius: 5,
+    fontSize: 16,
+  },
+  scheduleButton: {
+    position: 'absolute',
+    bottom: 350,
+  },
+  date: {
+    // shadowColor: 'white',
+    // shadowOffset:  {width: 0 ,height: 0},
+    // shadowOpacity: 1,
+    // shadowRadius: 5,
+    borderColor: 'gray',
+    // backgroundColor: 'black',
+    borderWidth: 2,
+    padding: 10,
+    borderRadius: 5,
+    borderStyle: 'dashed',
+
   },
 });
