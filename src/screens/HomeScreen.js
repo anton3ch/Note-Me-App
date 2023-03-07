@@ -1,4 +1,4 @@
-import { ImageBackground, StyleSheet, View, SafeAreaView, Appearance, Animated } from 'react-native';
+import { ImageBackground, StyleSheet, View, SafeAreaView, Appearance, Animated, Text } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import Header from './../components/Header';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,13 +15,9 @@ import { Provider, useDispatch, useSelector } from 'react-redux';
 import { switchMode } from './../redux-store/actions';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-
-
-
-
-
-
-
+import { Notifications } from 'expo';
+import NotificationScreen from './NotificationScreen';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 
@@ -47,8 +43,6 @@ export default function HomeScreen() {
     
   }, [mode]);
 
-  console.log(Appearance.getColorScheme())
-
 
   Appearance.addChangeListener(({ colorScheme }) => {
     if(colorScheme === 'dark' && mode === 'light'){
@@ -70,7 +64,7 @@ export default function HomeScreen() {
 
     Animated.timing(opacityAnimation, {
       toValue: 0,
-      duration: 5,
+      duration: 0,
       useNativeDriver: true
     }).start(() => {
       Animated.timing(opacityAnimation, {
@@ -81,13 +75,8 @@ export default function HomeScreen() {
     })
   };
 
-
-
   const opacityAnimation = useRef(new Animated.Value(0)).current;
-
-
   const opacityStyle = { opacity: opacityAnimation };
-
 
 
 
@@ -101,10 +90,41 @@ export default function HomeScreen() {
         <BlurView intensity={20} tint="light" style={styles.blurContainer}>
 
         <Header />
-        <ApplicationProvider {...eva} theme={{ ...eva.light, ...theme }}>
+
           <View style={styles.container}>
             <NavigationContainer theme={theme}>
-              <Tabs.Navigator>
+              <Tabs.Navigator screenOptions={({ route }) => ({
+                tabBarIcon: ({ focused, color, size }) => {
+                  let iconName;
+                  size = 28;
+                  if (route.name === 'Add Note') {
+                    iconName = focused
+                      ? 'add-outline'
+                      : 'add';
+                  } else if (route.name === 'Note List') {
+                    iconName = focused ? 'list-outline' : 'list-outline';
+                  } else if (route.name === 'NotificationScreen') {
+                    iconName = focused ? 'alarm-outline' : 'alarm-outline';
+                  }
+                  return <Ionicons name={iconName} size={size} color={color} />;
+                },
+                tabBarActiveTintColor: darkMode ? 'tomato' : 'rgba(85, 56, 255, 1)',
+                tabBarInactiveTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
+              
+                tabBarStyle: {
+                  backgroundColor:'rgba(127, 127, 127, 0.2)',
+                  borderTopColor: 'black',
+                  borderColor: 'black',
+                  borderLeftWidth: '1px',
+                  elevation: 0,   // for Android
+                  shadowOffset: {
+                      width: 0, height: 0 // for iOS
+                },
+              
+              }
+              })}
+            >
+
 
                 <Tabs.Screen name="Note List" component={NoteListController} options={{headerShown: false}} />
                 <Tabs.Screen name="Add Note" component={AddNote} 
@@ -120,16 +140,37 @@ export default function HomeScreen() {
                       
                     },
                     headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
+                    tabBarOptions: {
+                      style: {
+                          borderTopWidth: 0,
+                          backgroundColor: '#FFFFFF',
+                          borderTopRightRadius: 20,
+                          borderTopLeftRadius: 20,
+                          height: 55,
+                          paddingBottom: 5,
+                      }
+                  },
+
                   }}
                 />
-
+                  <Tabs.Screen name="NotificationScreen" component={NotificationScreen} options={{
+                    headerStyle: {
+                      backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
+                      borderBottomWidth: 1,
+                      borderColor:  darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(200, 200, 200, 0.9)',
+                      shadowColor: "gray",
+                      shadowOpacity: 0.7,
+                      shadowRadius: 5,
+                      shadowOffset: {width: 0, height: 5},
+                      
+                    },
+                    headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
+                  }}/>
               </Tabs.Navigator>
             </NavigationContainer>
 
 
           </View>
-        </ApplicationProvider>
-
         </BlurView>
       </ImageBackground>
     </Animated.View>
