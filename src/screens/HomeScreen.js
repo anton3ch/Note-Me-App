@@ -110,15 +110,18 @@ export default function HomeScreen() {
                 },
                 tabBarActiveTintColor: darkMode ? 'tomato' : 'rgba(85, 56, 255, 1)',
                 tabBarInactiveTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
-              
+                // tabStyle: {
+                //   borderWidth: 10,
+                //   borderRightColor: '#ddd',
+                // },
+                // style: { borderWidth: 10,},
                 tabBarStyle: {
-                  backgroundColor:'rgba(127, 127, 127, 0.2)',
+                  // backgroundColor:'rgba(127, 127, 127, 0.8)',
                   borderTopColor: 'black',
-                  borderColor: 'black',
-                  borderLeftWidth: '1px',
-                  elevation: 0,   // for Android
+                  // borderColor: 'red',
+                  // borderLeftWidth: '1px',
                   shadowOffset: {
-                      width: 0, height: 0 // for iOS
+                      width: 5, height: 0 // for iOS
                 },
               
               }
@@ -139,17 +142,19 @@ export default function HomeScreen() {
                       shadowOffset: {width: 0, height: 5},
                       
                     },
+                    
                     headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
-                    tabBarOptions: {
-                      style: {
-                          borderTopWidth: 0,
-                          backgroundColor: '#FFFFFF',
-                          borderTopRightRadius: 20,
-                          borderTopLeftRadius: 20,
-                          height: 55,
-                          paddingBottom: 5,
-                      }
-                  },
+                  //   tabBarOptions: {
+                  //     style: {
+                  //         borderTopWidth: 0,
+                  //         borderLeftWidth: 10,
+                  //         backgroundColor: '#FFFFFF',
+                  //         borderTopRightRadius: 20,
+                  //         borderTopLeftRadius: 20,
+                  //         height: 55,
+                  //         paddingBottom: 5,
+                  //     }
+                  // },
 
                   }}
                 />

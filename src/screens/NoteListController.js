@@ -1,10 +1,10 @@
 
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, SafeAreaView, ImageBackground } from 'react-native';
+import { StyleSheet, View, SafeAreaView, ImageBackground, Button, TouchableHighlight } from 'react-native';
 import React, { useEffect, useState } from 'react';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
-
+// import NotificationList from './NotificationList';
 
 
 import NoteList from './NoteList';
@@ -16,7 +16,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { BlurView } from '../../node_modules/expo-blur/build/index';
 import { useSelector } from 'react-redux';
-import NotificationScreen from './NotificationScreen';
+
+import { useNavigation } from "@react-navigation/native"
 
 
 const Stack = createStackNavigator();
@@ -24,6 +25,7 @@ const Stack = createStackNavigator();
 
 
 export default function NoteListController() {
+
   const mode = useSelector(state => state.theme);
   const [darkMode, setDarkMode] = useState(mode);
   useEffect(() => { 
@@ -44,6 +46,12 @@ export default function NoteListController() {
             shadowOffset: {width: 0, height: 5},
             
           },
+          headerTitleStyle: {
+            fontSize: 20,
+          },
+          headerRight: () => { return(
+            <Ionicons/>
+          )},
           headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
         }}/>
       <Stack.Screen name="NoteDetail" component={NoteDetail} options={{
@@ -56,10 +64,16 @@ export default function NoteListController() {
             shadowRadius: 7,
             shadowOffset: {width: 0, height: 5},
           },
+          headerTitleStyle: {
+            fontSize: 20,
+          },
+          headerRight: () => { return(
+            <Ionicons/>
+          )},
           headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
         }}
       />
-      <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{
+        {/* <Stack.Screen name="NotificationList" component={NotificationList} options={{
           headerStyle: {
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
             borderBottomWidth: 1,
@@ -71,7 +85,7 @@ export default function NoteListController() {
             
           },
           headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
-        }}/>
+        }}/> */}
     </Stack.Navigator>
   );
 }

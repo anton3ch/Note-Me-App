@@ -51,7 +51,7 @@ const AddNote = () => {
         style={styles.gradient}>
 
     {/* <BlurView intensity={40} tint="light" style={styles.blurContainer}> */}
-    <ScrollView style={styles.container} keyboardDismissMode='interactive'>
+    <ScrollView style={styles.container} keyboardDismissMode='onDrag'>
       <TextInput
         value={note}
         onChangeText={setNote}
@@ -100,6 +100,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 30,
     paddingTop: 80,
+    // height: Dimensions.get('window').height,
     // backgroundColor: 'rgba(171, 171, 171, 0.1)'
   },
   blurContainer: {

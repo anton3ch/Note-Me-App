@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Note-Me-App",
+    "scheme": "noteapp",
     "slug": "Note-Me-App",
     "version": "1.0.0",
     "orientation": "portrait",

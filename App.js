@@ -11,8 +11,6 @@ import {store, persistor} from './src/redux-store/store';
 
 export default function App() {
 
-
-
   return (
     <Provider store={store}>
       <PersistGate loading={<Text>Loading...</Text>} persistor={persistor}>
