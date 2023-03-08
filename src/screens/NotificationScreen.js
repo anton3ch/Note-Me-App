@@ -10,8 +10,8 @@ import {  Platform } from "react-native";
 import * as Device from 'expo-device';
 import { format } from 'date-fns';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useSelector } from 'react-redux';
-
+import * as actions  from './../redux-store/actions';
+import { useSelector, useDispatch } from 'react-redux'; 
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -23,6 +23,7 @@ Notifications.setNotificationHandler({
 
 
 export async function schedulePushNotification(body, title, dateOfReminder, noteId) {
+
   if(title === '') {
     title = "⏰ Note Me ⏰"
   }
@@ -38,12 +39,14 @@ export async function schedulePushNotification(body, title, dateOfReminder, note
       seconds: 2,
       repeats: false,
       channelId: 'default',
-      // date: dateOfReminder,
+      date: dateOfReminder,
     },
   });
-  console.log("notif id on scheduling",id)
-  return id;
+  // console.log("notif id on scheduling",id)
+
+  return id
 }
+
 
 
 const registerForPushNotificationsAsync = async () => {
@@ -95,6 +98,7 @@ export default function NotificationScreen(props) {
 
 
 
+  const dispatch = useDispatch();
 
 
   // console.log(selectedDate.getTime(), 'selectedDate.getTime()', selectedDate);
@@ -143,8 +147,26 @@ export default function NotificationScreen(props) {
     };
   }, []);
 
-  const handleScheduling = () => {
-    schedulePushNotification(noteBody, title, selectedDate, noteId)
+  const handleScheduling = async () => {
+    let NotificationTitle;
+    const notifDate = format(selectedDate, 'MMMM dd, yyyy hh:mma');
+
+    if(title === '') {
+      NotificationTitle = "⏰ Note Me ⏰"
+    } else {
+      NotificationTitle = title;
+    }
+    const id = await schedulePushNotification(noteBody, NotificationTitle, selectedDate, noteId);
+    let newNotification = {
+      notificationId: id, 
+      title: NotificationTitle, 
+      note: noteBody, 
+      id:  noteId,
+      date: notifDate,
+    };
+    dispatch(actions.addNotification(newNotification));
+    // dispatch(actions.resetNotification());
+
   }
 
 
