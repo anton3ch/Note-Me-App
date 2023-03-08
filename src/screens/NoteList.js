@@ -251,7 +251,7 @@ const NoteList = () => {
 
 
   const HiddenItemWithActions = props => {
-    const {swipeAnimatedValue, leftActionActivated, rightActionActivated, rowActionAnimatedValue, rowHeightAnimatedValue, onDelete, rightActionState} = props;
+    const {swipeAnimatedValue, leftActionActivated, rightActionActivated, rowActionAnimatedValue, rowHeightAnimatedValue, onDelete, rightActionState, data} = props;
 
     if (rightActionActivated) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
@@ -343,6 +343,7 @@ const NoteList = () => {
         style={styles.gradient}>
 
 
+          <Animated.View style={[opacityStyle, {flex: 1}]} >
           <SearchBar
             searchPhrase={searchPhrase}
             setSearchPhrase={setSearchPhrase}
@@ -350,7 +351,6 @@ const NoteList = () => {
             setClicked={setClicked}
             handleSearch={filteredData}
           />
-          <Animated.View style={[opacityStyle, {flex: 1}]} >
         <SwipeListView
           data={clicked ? filteredNotes :reverseNotes}
           renderItem={renderItem}
@@ -445,11 +445,11 @@ const styles = StyleSheet.create({
     width: 75,
   },
   backRightBtnLeft: {
-    backgroundColor: 'rgba(145, 152, 255, 1)',
+    backgroundColor: 'rgba(115, 105, 255, 1)',
     right: 75,
   },
   backRightBtnRight: {
-    backgroundColor: 'rgba(255, 145, 145, 1)',
+    backgroundColor: 'rgba(255, 93, 93, 1)',
     right: 0,
     borderTopRightRadius: 5,
     borderBottomRightRadius: 5,

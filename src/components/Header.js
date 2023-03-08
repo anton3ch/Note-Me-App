@@ -7,12 +7,13 @@ import { switchMode } from './../redux-store/actions';
 import { StatusBar } from 'expo-status-bar';
 import Animated, { Transitioning, FadeOut, AnimatedLayout, Transition, FadeIn, Layout } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
+// import { useHeaderHeight } from '@react-navigation/elements';
+// const headerHeight = useHeaderHeight();
+import { Header } from '@react-navigation/elements';
 
 
 
-
-
-const Header = () => {
+const CustomHeader = () => {
   const darkMode = useSelector(state => state.theme);
   const dispatch = useDispatch();
   const handleModeChange = () => {
@@ -81,7 +82,7 @@ const Header = () => {
   )
 }
 
-export default Header
+export default CustomHeader
 
 const styles = StyleSheet.create({
   header: {

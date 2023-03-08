@@ -16,7 +16,7 @@ import { switchMode } from './../redux-store/actions';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { Notifications } from 'expo';
-import NotificationScreen from './NotificationScreen';
+import NotificationList from './NotificationList';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
@@ -99,12 +99,12 @@ export default function HomeScreen() {
                   size = 28;
                   if (route.name === 'Add Note') {
                     iconName = focused
-                      ? 'add-outline'
-                      : 'add';
-                  } else if (route.name === 'Note List') {
-                    iconName = focused ? 'list-outline' : 'list-outline';
-                  } else if (route.name === 'NotificationScreen') {
-                    iconName = focused ? 'alarm-outline' : 'alarm-outline';
+                      ? 'add'
+                      : 'add-outline';
+                  } else if (route.name === 'Notes') {
+                    iconName = focused ? 'list' : 'list-outline';
+                  } else if (route.name === 'Note Reminders') {
+                    iconName = focused ? 'alarm' : 'alarm-outline';
                   }
                   return <Ionicons name={iconName} size={size} color={color} />;
                 },
@@ -129,7 +129,7 @@ export default function HomeScreen() {
             >
 
 
-                <Tabs.Screen name="Note List" component={NoteListController} options={{headerShown: false}} />
+                <Tabs.Screen name="Notes" component={NoteListController} options={{headerShown: false}} />
                 <Tabs.Screen name="Add Note" component={AddNote} 
                   options={{
                     headerStyle: {
@@ -142,8 +142,13 @@ export default function HomeScreen() {
                       shadowOffset: {width: 0, height: 5},
                       
                     },
-                    
+                    headerRight: () => { return(
+                      <Ionicons/>
+                    )},
                     headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
+                    headerTitleStyle: {
+                      fontSize: 20,
+                    },
                   //   tabBarOptions: {
                   //     style: {
                   //         borderTopWidth: 0,
@@ -158,7 +163,7 @@ export default function HomeScreen() {
 
                   }}
                 />
-                  <Tabs.Screen name="NotificationScreen" component={NotificationScreen} options={{
+                  <Tabs.Screen name="Note Reminders" component={NotificationList} options={{
                     headerStyle: {
                       backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
                       borderBottomWidth: 1,
@@ -168,6 +173,9 @@ export default function HomeScreen() {
                       shadowRadius: 5,
                       shadowOffset: {width: 0, height: 5},
                       
+                    },
+                    headerTitleStyle: {
+                      fontSize: 20,
                     },
                     headerTintColor: darkMode ? 'rgba(214, 214, 214, 1)' : 'rgba(61, 61, 61, 1)',
                   }}/>

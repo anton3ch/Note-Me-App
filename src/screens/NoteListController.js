@@ -35,7 +35,7 @@ export default function NoteListController() {
 
   return (     
     <Stack.Navigator>
-      <Stack.Screen name="NoteList" component={NoteList} options={{
+      <Stack.Screen name="All Notes" component={NoteList} options={{
           headerStyle: {
             backgroundColor: darkMode ? 'rgba(0, 0, 0, 0.25)' : 'rgba(255, 255, 255, 0.25)',
             borderBottomWidth: 1,

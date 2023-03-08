@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, ImageBackground, Button, Platform, Modal } from 'react-native'
+import { StyleSheet, View, Image, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, ImageBackground, Button, Platform, Modal, Keyboard } from 'react-native'
 import React, { useState, useEffect, useRef } from 'react'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ScreenType } from '../constants/constants';
@@ -14,7 +14,7 @@ import { format } from 'date-fns';
 import { useNavigation } from "@react-navigation/native"
 import * as Haptics from 'expo-haptics';
 import NotificationScreen from './NotificationScreen'
-
+import {useWindowDimensions} from 'react-native';
 
 
 
@@ -23,6 +23,8 @@ import NotificationScreen from './NotificationScreen'
 /////
 
 const NoteDetail = ({ route }) => {
+  const {height} = useWindowDimensions();
+  
   const date = format(route.params.time, 'MMMM dd, yyyy hh:mma');
   const [noteId, setNoteId] = useState(route.params.id);
   const [notes, setNotes] = useState([]);
@@ -91,50 +93,50 @@ const NoteDetail = ({ route }) => {
 
   return (
     <ImageBackground source = {darkMode ? darkBackground.uri : background.uri } style={styles.gradient} >
-    <BlurView intensity={40} tint="light" style={styles.blurContainer} keyboardShouldPersistTaps='handled' keyboardDismissMode='onDrag'>
+    <BlurView intensity={40} tint="light" style={styles.blurContainer} 
+    keyboardShouldPersistTaps='handled' keyboardDismissMode='onDrag'>
     <LinearGradient
       // Background Linear Gradient
       keyboardDismissMode='onDrag'
       colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
-      style={styles.gradient}>
+      style={styles.gradient}
+    >
       {/* <BlurView intensity={40} tint="light" style={styles.blurContainer}> */}
       <View style={styles.dateView}>
         <Text style={[darkMode ? {color: 'rgba(177, 177, 177, 1)'} : {color: 'rgba(177, 177, 177, 1)'}]}>Created: {noteCreationDate}</Text>
       </View>
-
-
           
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} >
-            <TextInput
-              value={note}
-              multiline={true}
-              autoFocus
-              selectionColor='#fff'
-              style={[styles.input, darkMode && {color: 'white'}]}
-              defaultValue={modalInputText}
-              editable={true}
-              onChangeText={(text) => handleChangeText(text)}
-            />
-          </KeyboardAvoidingView>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{flex: 1,}} keyboardVerticalOffset={height / 100 * 14}
+>
+        <TextInput
+          value={note}
+          multiline={true}
+          // autoFocus
+          selectionColor={darkMode ? '#fff' : 'rgba(74, 74, 74, 0.8)'}
+          style={[styles.input, darkMode && {color: 'white'}]}
+          defaultValue={modalInputText}
+          editable={true}
+          onChangeText={(text) => handleChangeText(text)}
+          // onScroll={Keyboard.dismiss}
+        />
+      </KeyboardAvoidingView>
 
-      {/* </BlurView> */}
       <View style={styles.centeredView}> 
 
-      
-        <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        // onRequestClose={() => {
-        //   console.log('Modal has been closed.');
-        //   setModalVisible(!modalVisible);
-        // }}
-        >
-      <NotificationScreen noteId={noteId} handleModal={handleModal}></NotificationScreen>
-      <TouchableOpacity style={styles.closeContainer} onPress={() => setModalVisible(!modalVisible)}>
-        <Ionicons style={styles.closeIcon} name="close-outline"/>
-      </TouchableOpacity>
-      </Modal>
+          <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          // onRequestClose={() => {
+          //   console.log('Modal has been closed.');
+          //   setModalVisible(!modalVisible);
+          // }}
+          >
+        <NotificationScreen noteId={noteId} handleModal={handleModal}></NotificationScreen>
+        <TouchableOpacity style={styles.closeContainer} onPress={() => setModalVisible(!modalVisible)}>
+          <Ionicons style={styles.closeIcon} name="close-outline"/>
+        </TouchableOpacity>
+        </Modal>
       </View>
 
     </LinearGradient>
@@ -160,12 +162,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   input: {
+    flex: 1,
     // height: '100%',
-    margin: 30,
-    marginTop: 50,
+    margin: 15,
+    marginTop: 35,
     marginRight: 0,
+    marginBottom: 0,
+    paddingHorizontal: 15,
     paddingRight: 30,
-    height: Dimensions.get('window').height,
+    paddingBottom: 15,
+    height: '100%',
   },
   alarm: {
     fontSize: 30,
@@ -197,7 +203,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   centeredView: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 22,
