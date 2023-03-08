@@ -9,12 +9,14 @@ describe('notificationListReducer', () => {
       notificationId: '70067d23-ef92-48f1-b962-9fb892fb7bdc',
       title: 'Note reminder',
       note: 'I love redux.',
-      id: 1 
+      id: 1,
+      date: '2023-03-08T22:09:16.312Z',
     }, 2: {
       notificationId: '40af29ee-7aed-434b-bbe6-e7fb6eb5e5ec',
       title: 'Note reminder',
       note: 'Reducer has side effects.',
-      id: 2 
+      id: 2,
+      date: '2023-03-08T22:09:16.312Z',
     }
   }
 
@@ -24,7 +26,8 @@ describe('notificationListReducer', () => {
     notificationId: '70067d23-ef92-48f1-b962-9fb892fb7bdc',
     title: 'Note reminder',
     note: 'I love redux.',
-    id: 1
+    id: 1,
+    date: '2023-03-08T22:09:16.312Z',
   };
 
 
@@ -33,13 +36,14 @@ describe('notificationListReducer', () => {
   });
 
   test('should successfully add a notification to the notification list', () => {
-    const { notificationId, title, note, id } = notificationData;
+    const { notificationId, title, note, id, date } = notificationData;
     action = {
       type: c.ADD_NOTIFICATION,
       notificationId: notificationId,
       title: title,
       note: note,
       id: id,
+      date: date,
     };
     expect(notificationListReducer({}, action)).toEqual({
       [id] : {
@@ -47,6 +51,7 @@ describe('notificationListReducer', () => {
         title: title,
         note: note,
         id: id,
+        date: date,
       }
     });
   });
@@ -61,7 +66,8 @@ describe('notificationListReducer', () => {
         notificationId: '40af29ee-7aed-434b-bbe6-e7fb6eb5e5ec',
         title: 'Note reminder',
         note: 'Reducer has side effects.',
-        id: 2
+        id: 2,
+        date: '2023-03-08T22:09:16.312Z',
       }
     });
   });

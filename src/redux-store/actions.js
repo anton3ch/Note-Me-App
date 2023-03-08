@@ -12,14 +12,18 @@ export const deleteNotification = id => ({
   id
 });
 
+export const resetNotification = () => ({
+  type: c.RESET_NOTIFICATION,
+});
 
 export const addNotification = (notification) => {
-  const { notificationId, title, note, id } = notification;
+  const { notificationId, title, note, id, date } = notification;
   return {
     type: c.ADD_NOTIFICATION,
     notificationId: notificationId,
     title: title,
     note: note,
     id: id,
+    date: date,
   }
 }
