@@ -339,7 +339,7 @@ const NoteList = () => {
         // <BlurView intensity={30} tint="light" style={styles.blurContainer}>
         <LinearGradient
         // Background Linear Gradient
-        colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.15)']}
+        colors={['rgba(60,60,60, 0)', 'rgba(120,120,120, 0.15)']}
         style={styles.gradient}>
 
 

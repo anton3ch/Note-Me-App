@@ -116,7 +116,7 @@ const NotificationList = () => {
 
   return (
     <LinearGradient
-      colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
+    colors={['rgba(60,60,60, 0)', 'rgba(120,120,120, 0.15)']}
       style={styles.gradient}
     >
       <ScrollView 
@@ -193,6 +193,7 @@ function Notification(props){
             deleteNotification={props.deleteNotification} 
             handleModal={props.handleModal} 
             modalVisible={props.modalVisible}
+            darkMode={props.darkMode}
             setModalVisible={props.setModalVisible}
             />
         </Modal>
@@ -206,21 +207,21 @@ function Notification(props){
 function ConfirmDelete(props){
   return (
     <React.Fragment>
-      <View style={styles.modalView}>
-      <View style={styles.modalBoxView}>
+      <View style={[styles.modalView, props.darkMode && {backgroundColor: 'rgba(100, 100, 100, 0.5)'}]}>
+      <View style={[styles.modalBoxView, props.darkMode && {backgroundColor: 'rgba(60, 60, 60, 1)'}]}>
 
 
-      <Text style={styles.modalTitle}>Are you sure you want to cancel the reminder?</Text>
+      <Text style={[styles.modalTitle, props.darkMode && {color: 'rgba(200, 200, 200, 1)'}]}>Are you sure you want to cancel the reminder?</Text>
       <View style={styles.modalOptions}>
         <TouchableOpacity  
           onPress={() => {props.setModalVisible(!props.modalVisible); props.deleteNotification(props.notificationId)}}
           >
-          <Text style={styles.yesOption}>Yes</Text>
+          <Text style={[styles.yesOption, props.darkMode && {color: 'rgba(200, 200, 200, 1)'}]}>Yes</Text>
         </TouchableOpacity>
         <TouchableOpacity  
           onPress={() => {props.setModalVisible(!props.modalVisible);}}
           >
-            <Text style={styles.noOption}>No</Text>
+            <Text style={[styles.noOption, props.darkMode && {color: 'rgba(200, 200, 200, 1)'}]}>No</Text>
         </TouchableOpacity>
           </View>
           </View>
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     // alignContent: 'center',
     borderRadius: 6,
-    height: 70,
+    height: 80,
     marginHorizontal: 5,
     shadowColor: '#999',
     shadowOffset: {width: 0, height: 1},
@@ -265,14 +266,14 @@ const styles = StyleSheet.create({
   rowFrontVisible: {
     // backgroundColor: '#FFF',
     borderRadius: 5,
-    height: 60,
+    height: 70,
     padding: 10,
-    // paddingTop: 5,
+    paddingTop: 5,
   },
   title: {
     fontSize: 14,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 5,
     color: '#666',
   },
   details: {
@@ -280,7 +281,7 @@ const styles = StyleSheet.create({
     color: '#999',
   },
   modalView: {
-    backgroundColor: 'rgba(127,127,127,0.5)',
+    backgroundColor: 'rgba(150,150,150,0.5)',
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -300,7 +301,7 @@ const styles = StyleSheet.create({
     right: 10,
   },
   closeIcon : {
-    fontSize: 35,
+    fontSize: 30,
     color: 'rgba(255, 93, 93, 1)',
   },
   closeContainer: {

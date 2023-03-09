@@ -70,7 +70,7 @@ const AddNote = () => {
   return (
     <LinearGradient
         // Background Linear Gradient
-        colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
+        colors={['rgba(60,60,60, 0)', 'rgba(120,120,120, 0.15)']}
         style={styles.gradient}>
 
     {/* <BlurView intensity={40} tint="light" style={styles.blurContainer}> */}
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   saveContainer: {
     flex: 1,
     position: 'absolute',
-    left: 11,
+    left: 13,
     width: 39,
     alignItems: 'center',
     justifyContent: 'center',

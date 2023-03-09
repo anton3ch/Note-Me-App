@@ -93,12 +93,12 @@ const NoteDetail = ({ route }) => {
 
   return (
     <ImageBackground source = {darkMode ? darkBackground.uri : background.uri } style={styles.gradient} >
-    <BlurView intensity={40} tint="light" style={styles.blurContainer} 
+    <BlurView intensity={30} tint="light" style={styles.blurContainer} 
     keyboardShouldPersistTaps='handled' keyboardDismissMode='onDrag'>
     <LinearGradient
       // Background Linear Gradient
       keyboardDismissMode='onDrag'
-      colors={['rgba(60,60,60, 0)', 'rgba(60,60,60, 0.1)']}
+      colors={darkMode ? ['rgba(20,20,20, 0.3)', 'rgba(20,20,20, 0.4)']: ['rgba(200,200,200, 0.1)', 'rgba(200,200,200, 0.2)']}
       style={styles.gradient}
     >
       {/* <BlurView intensity={40} tint="light" style={styles.blurContainer}> */}
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   scheduleContainer: {
     flex: 1,
     position: 'absolute',
-    left: 5,
+    left: 8,
     width: 39,
     alignItems: 'center',
     justifyContent: 'center',

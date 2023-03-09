@@ -39,7 +39,7 @@ export async function schedulePushNotification(body, title, dateOfReminder, note
       seconds: 2,
       repeats: false,
       channelId: 'default',
-      date: dateOfReminder,
+      // date: dateOfReminder,
     },
   });
   // console.log("notif id on scheduling",id)
