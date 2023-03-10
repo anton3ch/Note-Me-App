@@ -7,7 +7,6 @@ import AddNote from './../screens/AddNote';
 
 import NoteList from './NoteList';
 import NoteListController from './NoteListController';
-import { ApplicationProvider } from '@ui-kitten/components';
 import * as eva from "@eva-design/eva";
 // import { default as theme } from './custom-theme.json';
 import { BlurView } from 'expo-blur';

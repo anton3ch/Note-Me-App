@@ -15,7 +15,7 @@ import {actions, RichEditor, RichToolbar} from "react-native-pell-rich-editor";
 import SearchBar from '../components/SearchBar';
 import { useSelector } from 'react-redux';
 import { VirtualizedScrollView } from 'react-native-virtualized-view';
-
+import Highlighter from 'react-native-highlight-words';
 
   
 
@@ -216,8 +216,12 @@ const NoteList = () => {
         colors={['transparent', 'rgba(100,100,100, 0.2)']}
         style={styles.gradientRow}>
           <View>
-            <Text style={[styles.details, darkMode ? {color: 'rgba(162, 162, 162, 1)'}: {color: 'rgba(103, 103, 103, 1)'}]}>{data.item.note}</Text>
-            
+            {/* <Text style={[styles.details, darkMode ? {color: 'rgba(162, 162, 162, 1)'}: {color: 'rgba(103, 103, 103, 1)'}]}>{data.item.note}</Text> */}
+            <Highlighter style={[styles.details, darkMode ? {color: 'rgba(162, 162, 162, 1)'}: {color: 'rgba(103, 103, 103, 1)'}]}
+              highlightStyle={[{backgroundColor: 'rgba(252, 255, 101, 0.49)'}, darkMode && {backgroundColor: 'rgba(131, 131, 131, 0.49)'}]}
+              searchWords={[searchPhrase]}
+              textToHighlight={data.item.note}
+            />
             {/* <RichEditor
                         ref={richText}
                         initialContentHTML={data.item.note}
